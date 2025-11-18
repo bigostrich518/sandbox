@@ -1,0 +1,336 @@
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, XCircle, DollarSign, Calendar, ArrowRight, Check, Menu, X, Share2, FileWarning, ShieldAlert } from 'lucide-react';
+
+// --- Components ---
+
+const Nav = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-black/95 border-b border-red-900 shadow-lg' : 'bg-transparent'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <div className="flex-shrink-0">
+            <a href="#" className="flex items-center gap-2">
+              <div className="bg-red-700 p-2 rounded-sm">
+                <FileWarning className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-white font-black text-2xl tracking-tighter uppercase">THE TRUTH<span className="text-red-600">.ORG</span></span>
+            </a>
+          </div>
+          
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-8">
+              <a href="#record" className="text-gray-300 hover:text-red-500 px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-colors">The Record</a>
+              <a href="#timeline" className="text-gray-300 hover:text-red-500 px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-colors">Timeline</a>
+              <a href="#fact-check" className="text-gray-300 hover:text-red-500 px-3 py-2 rounded-md text-sm font-bold uppercase tracking-wider transition-colors">Fact Check</a>
+              <a href="#join" className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-sm text-sm font-bold uppercase tracking-wider transition-colors border border-red-600">Get Updates</a>
+            </div>
+          </div>
+
+          <div className="-mr-2 flex md:hidden">
+            <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none">
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {isOpen && (
+        <div className="md:hidden bg-black border-b border-red-900">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#record" onClick={() => setIsOpen(false)} className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase">The Record</a>
+            <a href="#timeline" onClick={() => setIsOpen(false)} className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase">Timeline</a>
+            <a href="#fact-check" onClick={() => setIsOpen(false)} className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase">Fact Check</a>
+            <a href="#join" onClick={() => setIsOpen(false)} className="text-red-500 hover:text-red-400 block px-3 py-2 rounded-md text-base font-bold uppercase">Get Updates</a>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+const Hero = () => {
+  return (
+    <div className="relative bg-black min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Gritty Overlay Texture (CSS pattern) */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'1\'/%3E%3C/svg%3E")' }}></div>
+      
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black"></div>
+      
+      {/* Diagonal Slash Design Element */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -right-40 -top-40 w-96 h-96 bg-red-900/20 blur-[100px] rounded-full"></div>
+        <div className="absolute -left-40 bottom-0 w-96 h-96 bg-red-900/10 blur-[100px] rounded-full"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10 pt-20">
+        <div className="inline-flex items-center gap-2 bg-red-900/30 border border-red-800/50 rounded-full px-4 py-1 mb-8 backdrop-blur-sm">
+          <AlertTriangle className="w-4 h-4 text-red-500" />
+          <span className="text-red-400 text-xs font-bold tracking-[0.2em] uppercase">Voter Warning</span>
+        </div>
+        
+        <h1 className="text-5xl md:text-7xl lg:text-9xl font-black text-white tracking-tighter mb-6 leading-none">
+          WRONG FOR <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-800">THE FUTURE</span>
+        </h1>
+        
+        <p className="mt-6 max-w-3xl mx-auto text-xl md:text-2xl text-gray-400 font-medium">
+          Senator John Doe has spent 20 years in Washington. 
+          <span className="text-white block mt-2">It's time to look at the cost.</span>
+        </p>
+        
+        <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+          <a href="#record" className="px-8 py-4 bg-red-700 hover:bg-red-800 text-white font-bold uppercase tracking-widest text-sm transition-all border-2 border-red-700 shadow-[0_0_20px_rgba(185,28,28,0.3)]">
+            See The Record
+          </a>
+          <a href="#fact-check" className="px-8 py-4 bg-transparent hover:bg-white/5 text-white font-bold uppercase tracking-widest text-sm transition-all border-2 border-gray-700">
+            Get The Facts
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({ icon: Icon, value, label, description }) => (
+  <div className="bg-gray-900 border border-gray-800 p-8 relative overflow-hidden group hover:border-red-900 transition-colors">
+    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <Icon className="w-24 h-24 text-red-600" />
+    </div>
+    <div className="relative z-10">
+      <div className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter">{value}</div>
+      <div className="text-red-500 font-bold uppercase tracking-wider text-sm mb-4">{label}</div>
+      <p className="text-gray-400 leading-relaxed text-sm">{description}</p>
+    </div>
+  </div>
+);
+
+const TheRecord = () => {
+  return (
+    <section id="record" className="py-24 bg-black relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-16 md:text-center">
+          <h2 className="text-red-600 font-bold tracking-[0.2em] uppercase mb-3 text-sm">By The Numbers</h2>
+          <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">A Record of <span className="text-red-600">Failure</span></h3>
+          <div className="w-24 h-1 bg-red-700 mt-6 md:mx-auto"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard 
+            icon={DollarSign} 
+            value="$2.5T" 
+            label="Added to Debt" 
+            description="Voted 15 times to raise the debt ceiling while cutting funding for essential local infrastructure projects."
+          />
+          <StatCard 
+            icon={XCircle} 
+            value="142" 
+            label="Missed Votes" 
+            description="While our community was struggling, Doe was absent in Washington, skipping crucial votes on disaster relief."
+          />
+          <StatCard 
+            icon={FileWarning} 
+            value="Zero" 
+            label="Bills Passed" 
+            description="In six years, not a single piece of sponsored legislation has been signed into law to help our district."
+          />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const TimelineItem = ({ year, title, description, side }) => (
+  <div className={`mb-12 flex justify-between items-center w-full ${side === 'left' ? 'flex-row-reverse' : ''}`}>
+    <div className="hidden md:block w-5/12"></div>
+    
+    <div className="z-20 flex items-center order-1 bg-red-900 shadow-xl w-8 h-8 rounded-full border-4 border-black">
+      <div className="mx-auto font-semibold text-lg text-white"></div>
+    </div>
+    
+    <div className={`order-1 bg-zinc-900 border border-zinc-800 rounded-sm shadow-xl w-full md:w-5/12 px-6 py-6 hover:border-red-900/50 transition-colors`}>
+      <span className="font-black text-red-600 text-xl mb-1 block">{year}</span>
+      <h3 className="font-bold text-white text-lg mb-2 uppercase">{title}</h3>
+      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+    </div>
+  </div>
+);
+
+const Timeline = () => {
+  return (
+    <section id="timeline" className="py-24 bg-zinc-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-16">
+          <h2 className="text-red-600 font-bold tracking-[0.2em] uppercase mb-3 text-sm">History Repeated</h2>
+          <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">Timeline of <span className="text-white">Decisions</span></h3>
+        </div>
+
+        <div className="relative wrap overflow-hidden h-full">
+          <div className="border-2-2 absolute border-opacity-20 border-red-700 h-full border left-0 md:left-1/2 ml-[15px] md:ml-[-1px]"></div>
+          
+          <div className="pl-8 md:pl-0">
+            <TimelineItem 
+              year="2018"
+              title="The Tax Hike Vote"
+              description="Voted YES on Bill 404, increasing the tax burden on middle-class families while creating loopholes for corporate donors."
+              side="right"
+            />
+            <TimelineItem 
+              year="2020"
+              title="Healthcare Cuts"
+              description="Proposed cutting funding to rural hospitals during the peak of the health crisis, putting thousands of local residents at risk."
+              side="left"
+            />
+            <TimelineItem 
+              year="2022"
+              title="Ethics Investigation"
+              description="Subject of an ethics inquiry regarding undeclared gifts from lobbyists representing the oil and gas industry."
+              side="right"
+            />
+            <TimelineItem 
+              year="2024"
+              title="Education Defunding"
+              description="Co-sponsored legislation that would reduce federal grants for our state's public university system by 15%."
+              side="left"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FactCheckCard = ({ claim, reality, source }) => (
+  <div className="bg-black border border-zinc-800 p-8 relative">
+    <div className="flex flex-col md:flex-row gap-8">
+      <div className="md:w-1/2 space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="bg-zinc-800 px-2 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">The Claim</div>
+        </div>
+        <p className="text-xl text-gray-300 font-serif italic">"{claim}"</p>
+        <p className="text-sm text-gray-500">— Campaign Ad, 2024</p>
+      </div>
+      
+      <div className="hidden md:block w-px bg-zinc-800"></div>
+      
+      <div className="md:w-1/2 space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="bg-red-900/50 px-2 py-1 text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1">
+            <ShieldAlert className="w-3 h-3" /> The Reality
+          </div>
+        </div>
+        <p className="text-xl text-white font-bold">{reality}</p>
+        <a href="#" className="text-xs text-red-500 hover:text-red-400 uppercase font-bold tracking-wide flex items-center gap-1 mt-4 group">
+          See Source <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+        </a>
+      </div>
+    </div>
+  </div>
+);
+
+const FactCheck = () => {
+  return (
+    <section id="fact-check" className="py-24 bg-zinc-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div>
+            <h2 className="text-red-600 font-bold tracking-[0.2em] uppercase mb-3 text-sm">Setting the Record Straight</h2>
+            <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">Fact <span className="text-red-600">Check</span></h3>
+          </div>
+          <div className="hidden md:block">
+            <button className="text-white border border-gray-600 px-6 py-3 hover:bg-white hover:text-black transition-all uppercase font-bold text-sm tracking-widest">
+              View All Sources
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <FactCheckCard 
+            claim="I have always voted to protect local jobs."
+            reality="Doe voted three times to outsource manufacturing contracts to foreign bidders, costing the district 4,000 jobs."
+          />
+          <FactCheckCard 
+            claim="I am a champion for clean energy."
+            reality="Accepted over $500k in donations from major polluters and voted to repeal key environmental protections in the Clean Water Act."
+          />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-black border-t border-zinc-900 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+          <div>
+            <h4 className="text-white font-black text-2xl uppercase tracking-tighter mb-6">Join the Fight</h4>
+            <p className="text-gray-400 mb-6 max-w-md">
+              We need your help to hold them accountable. Sign up for rapid response alerts and get the truth delivered to your inbox.
+            </p>
+            <form className="flex gap-2 max-w-md">
+              <input 
+                type="email" 
+                placeholder="ENTER EMAIL ADDRESS" 
+                className="bg-zinc-900 border border-zinc-800 text-white px-4 py-3 w-full focus:outline-none focus:border-red-700 text-sm uppercase tracking-wide"
+              />
+              <button className="bg-red-700 text-white px-6 py-3 font-bold uppercase tracking-wider hover:bg-red-800 transition-colors text-sm">
+                Join
+              </button>
+            </form>
+          </div>
+          
+          <div className="flex flex-col justify-between">
+            <div className="flex gap-6 md:justify-end">
+              <a href="#" className="text-gray-500 hover:text-white transition-colors"><span className="sr-only">Twitter</span><svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
+              <a href="#" className="text-gray-500 hover:text-white transition-colors"><span className="sr-only">Facebook</span><svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg></a>
+            </div>
+            <div className="md:text-right mt-8 md:mt-0">
+               <p className="text-zinc-600 text-xs uppercase tracking-widest mb-2">Share the facts</p>
+               <button className="text-red-500 hover:text-red-400 font-bold text-sm flex items-center gap-2 md:justify-end">
+                 <Share2 className="w-4 h-4" /> Copy Link
+               </button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="border-t border-zinc-900 pt-8 text-center">
+          <div className="inline-block border border-white/20 px-4 py-2 mb-4">
+            <p className="text-gray-500 text-xs uppercase tracking-widest">
+              Paid for by The Accountability Project
+            </p>
+          </div>
+          <p className="text-gray-600 text-xs">
+            Not authorized by any candidate or candidate's committee.
+          </p>
+          <p className="text-gray-700 text-xs mt-4">
+            &copy; 2024 The Truth Org. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="bg-black min-h-screen text-white selection:bg-red-900 selection:text-white font-sans">
+      <Nav />
+      <Hero />
+      <TheRecord />
+      <Timeline />
+      <FactCheck />
+      <Footer />
+    </div>
+  );
+}
