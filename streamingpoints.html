@@ -21,13 +21,13 @@
             /* 12px */
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             transition: all 0.3s ease-in-out;
-            border-top: 4px solid #4f46e5;
-            /* Indigo accent */
+            border-top: 4px solid #2563eb;
+            /* Blue accent */
         }
 
         /* Editable title for the card */
         .title-input {
-            @apply text-lg font-bold text-gray-800 bg-transparent focus:bg-gray-100 rounded-md p-2 -ml-2 w-full sm:w-2/3 border-2 border-transparent focus:border-indigo-300 focus:outline-none transition-colors duration-200;
+            @apply text-lg font-bold text-gray-800 bg-transparent focus:bg-gray-100 rounded-md p-2 -ml-2 w-full sm:w-2/3 border-2 border-transparent focus:border-blue-300 focus:outline-none transition-colors duration-200;
         }
 
         /* Labels for the input fields */
@@ -37,7 +37,7 @@
 
         /* The actual input fields */
         .input-field {
-            @apply w-full bg-white border-2 border-gray-200 text-gray-900 text-base rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 transition-all duration-200;
+            @apply w-full bg-white border-2 border-gray-200 text-gray-900 text-base rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-all duration-200;
         }
 
         /* Labels for the calculated output fields */
@@ -47,7 +47,7 @@
 
         /* The calculated values - the star of the show */
         .calculated-field {
-            @apply w-full text-indigo-600 text-3xl rounded-md block p-2 font-extrabold text-center;
+            @apply w-full text-blue-600 text-3xl rounded-md block p-2 font-extrabold text-center;
         }
 
         .remove-btn {
@@ -56,7 +56,7 @@
 
         /* The main "Add" button */
         .add-btn {
-            @apply bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/50;
+            @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/50;
         }
 
         /* Drag and Drop Styles */
@@ -66,7 +66,7 @@
 
         .dragging {
             opacity: 0.5;
-            border: 2px dashed #4f46e5;
+            border: 2px dashed #2563eb;
         }
 
         .drag-handle {
@@ -76,7 +76,7 @@
         }
 
         .drag-handle:hover {
-            color: #4f46e5;
+            color: #2563eb;
             cursor: grabbing;
         }
     </style>
@@ -96,7 +96,7 @@
                 <div class="w-full md:w-1/2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
                     <input type="text" id="plan-name"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="e.g., Q4 Streaming Campaign">
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -109,7 +109,7 @@
                         Load
                     </button>
                     <button id="save-plan-btn"
-                        class="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm">
+                        class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm">
                         Save
                     </button>
                 </div>
@@ -350,12 +350,12 @@
                 const originalText = savePlanBtn.textContent;
                 savePlanBtn.textContent = 'Saved!';
                 savePlanBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                savePlanBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                savePlanBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
 
                 setTimeout(() => {
                     savePlanBtn.textContent = originalText;
                     savePlanBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                    savePlanBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    savePlanBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
                 }, 2000);
             };
 
