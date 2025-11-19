@@ -58,6 +58,27 @@
         .add-btn {
             @apply bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/50;
         }
+
+        /* Drag and Drop Styles */
+        .draggable-source {
+            cursor: move;
+        }
+
+        .dragging {
+            opacity: 0.5;
+            border: 2px dashed #4f46e5;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .drag-handle:hover {
+            color: #4f46e5;
+            cursor: grabbing;
+        }
     </style>
 </head>
 
@@ -190,6 +211,7 @@
             const addDemographicCard = (data = {}) => {
                 const card = document.createElement('div');
                 card.className = 'demographic-card';
+                card.setAttribute('draggable', 'true');
 
                 const { channel = '', population = '', cpm = '', impressions = '' } = data;
                 const uniqueId = crypto.randomUUID();
@@ -197,7 +219,12 @@
                 card.innerHTML = `
                     <div class="p-6">
                         <div class="flex justify-between items-start sm:items-center mb-5">
-                            <input type="text" class="title-input" placeholder="Enter Demographic Name" value="${channel}">
+                            <div class="flex items-center gap-2 flex-1">
+                                <div class="drag-handle p-1" title="Drag to reorder">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                                </div>
+                                <input type="text" class="title-input" placeholder="Enter Demographic Name" value="${channel}">
+                            </div>
                             <button class="remove-btn p-1 flex-shrink-0" title="Remove Demographic">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
@@ -249,6 +276,41 @@
                     }
                 });
                 calculateCard(card);
+
+                // Drag and Drop Events
+                card.addEventListener('dragstart', () => {
+                    card.classList.add('dragging');
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                });
+            };
+
+            // Container Drag Events
+            calculatorBody.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(calculatorBody, e.clientY);
+                const draggable = document.querySelector('.dragging');
+                if (afterElement == null) {
+                    calculatorBody.appendChild(draggable);
+                } else {
+                    calculatorBody.insertBefore(draggable, afterElement);
+                }
+            });
+
+            const getDragAfterElement = (container, y) => {
+                const draggableElements = [...container.querySelectorAll('.demographic-card:not(.dragging)')];
+
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
             };
 
             const clearBoard = () => {
