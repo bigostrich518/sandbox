@@ -283,19 +283,17 @@
     <script>
         // --- Initial Data Configuration ---
         const DEFAULTS = [
-            { id: 'broadcast', category: 'Linear', name: 'Broadcast', share: 20.8, adSupport: 100, active: true, color: '#dc2626' },
-            { id: 'cable', category: 'Linear', name: 'Cable', share: 24.5, adSupport: 100, active: true, color: '#ef4444' },
-            { id: 'youtube', category: 'Streaming', name: 'YouTube', share: 12.4, adSupport: 95, active: true, color: '#FF0000' },
-            { id: 'netflix', category: 'Streaming', name: 'Netflix', share: 7.8, adSupport: 15, active: true, color: '#B91C1C' },
-            { id: 'hulu', category: 'Streaming', name: 'Hulu', share: 3.1, adSupport: 85, active: true, color: '#16a34a' },
+            { id: 'broadcast', category: 'Linear', name: 'Broadcast', share: 22.9, adSupport: 100, active: true, color: '#dc2626' },
+            { id: 'cable', category: 'Linear', name: 'Cable', share: 22.2, adSupport: 100, active: true, color: '#ef4444' },
+            { id: 'youtube', category: 'Streaming', name: 'YouTube', share: 12.9, adSupport: 95, active: true, color: '#FF0000' },
+            { id: 'netflix', category: 'Streaming', name: 'Netflix', share: 8.0, adSupport: 15, active: true, color: '#B91C1C' },
+            { id: 'disney_hulu', category: 'Streaming', name: 'Disney/Hulu', share: 4.8, adSupport: 50, active: true, color: '#16a34a' },
             { id: 'prime', category: 'Streaming', name: 'Prime Video', share: 3.1, adSupport: 50, active: true, color: '#0284c7' },
-            { id: 'disney', category: 'Streaming', name: 'Disney+', share: 2.1, adSupport: 30, active: true, color: '#111827' },
-            { id: 'peacock', category: 'Streaming', name: 'Peacock', share: 1.5, adSupport: 90, active: true, color: '#eab308' },
-            { id: 'tubi', category: 'Streaming', name: 'Tubi', share: 2.0, adSupport: 100, active: true, color: '#f97316' },
-            { id: 'roku', category: 'Streaming', name: 'Roku Channel', share: 2.4, adSupport: 100, active: true, color: '#8b5cf6' },
-            { id: 'max', category: 'Streaming', name: 'Max', share: 1.0, adSupport: 75, active: true, color: '#3b82f6' },
-            { id: 'other_stream', category: 'Streaming', name: 'Other Streaming', share: 8.9, adSupport: 50, active: true, color: '#64748b' },
-            { id: 'other_tv', category: 'Other', name: 'Other TV', share: 10.4, adSupport: 0, active: false, color: '#94a3b8' },
+            { id: 'peacock', category: 'Streaming', name: 'Peacock', share: 1.6, adSupport: 75, active: true, color: '#eab308' },
+            { id: 'tubi', category: 'Streaming', name: 'Tubi', share: 2.2, adSupport: 100, active: true, color: '#f97316' },
+            { id: 'roku', category: 'Streaming', name: 'Roku Channel', share: 2.8, adSupport: 100, active: true, color: '#8b5cf6' },
+            { id: 'max', category: 'Streaming', name: 'Max/WB', share: 1.3, adSupport: 100, active: true, color: '#3b82f6' },
+            { id: 'other_stream', category: 'Streaming', name: 'Other Streaming', share: 6.3, adSupport: 50, active: true, color: '#64748b' },
         ];
 
         let appData = JSON.parse(JSON.stringify(DEFAULTS));
