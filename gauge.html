@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Political Ad-Supported Gauge Translator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        nielsen: { blue: '#0066cc', light: '#e6f0ff' },
+                        cat: {
+                            broadcast: '#2e7d32', // Greenish
+                            cable: '#c62828',    // Reddish
+                            streaming: '#6a1b9a', // Purple
+                            other: '#616161'     // Grey
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+        }
+
+        /* Smooth transitions for UI elements */
+        .transition-all-200 {
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Custom toggle switch styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0066cc;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #0066cc;
+        }
+
+        /* Input number styling - hide arrows for cleaner look, use hover to show? No, standard is better for data entry */
+        /* Actually, keeping arrows is better for small adjustments */
+
+        /* Modal Animation */
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 p-4 shadow-sm flex-none z-10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-nielsen-blue flex items-center gap-2">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
+                    </svg>
+                    Political Gauge Translator
+                </h1>
+                <p class="text-sm text-slate-500">Rebalance viewership data for buyable political inventory</p>
+            </div>
+            <div class="text-right hidden sm:block">
+                <div class="text-xs font-bold uppercase tracking-wide text-slate-400">Total Buyable Universe</div>
+                <div id="header-total-share" class="text-2xl font-black text-nielsen-blue">--%</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 overflow-hidden max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6">
+
+        <!-- LEFT PANEL: Inputs (Scrollable) -->
+        <section
+            class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden h-full">
+            <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h2 class="font-bold text-slate-700">Platform Configuration</h2>
+                <div class="flex gap-3">
+                    <button onclick="openModal()"
+                        class="text-xs font-bold bg-nielsen-blue text-white px-3 py-1.5 rounded hover:bg-blue-700 transition flex items-center gap-1">
+                        <span>+ Add Platform</span>
+                    </button>
+                    <button onclick="resetDefaults()"
+                        class="text-xs text-slate-500 hover:text-red-600 underline">Reset</button>
+                </div>
+            </div>
+
+            <!-- Table Header -->
+            <div
+                class="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-100 text-xs font-bold text-slate-500 border-b border-slate-200">
+                <div class="col-span-4 pl-2">PLATFORM</div>
+                <div class="col-span-2 text-center">GAUGE %</div>
+                <div class="col-span-3 text-center">AD SUPPORT %</div>
+                <div class="col-span-3 text-center">ACTIONS</div>
+            </div>
+
+            <!-- Scrollable Input List -->
+            <div id="input-list" class="overflow-y-auto flex-1 p-2 space-y-1 pb-10">
+                <!-- Items injected by JS -->
+            </div>
+        </section>
+
+
+        <!-- RIGHT PANEL: Visuals (Fixed) -->
+        <section class="lg:col-span-5 flex flex-col gap-6 h-full overflow-y-auto pb-20">
+
+            <!-- 1. The Political Gauge (Stacked Bar) -->
+            <div class="bg-slate-900 text-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-xl font-bold text-white">The Political Gauge</h2>
+                    <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">Normalized to 100%</span>
+                </div>
+
+                <!-- Stacked Bar Visual -->
+                <div class="relative h-16 w-full rounded-lg overflow-hidden flex bg-slate-800 mb-2"
+                    id="gauge-bar-container">
+                    <!-- Segments injected by JS -->
+                </div>
+
+                <!-- Legend -->
+                <div class="flex flex-wrap gap-3 text-xs text-slate-300 mt-3" id="gauge-legend">
+                    <!-- Legend items injected by JS -->
+                </div>
+            </div>
+
+            <!-- 2. Comparison Chart -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex-1 flex flex-col min-h-[300px]">
+                <h3 class="font-bold text-slate-700 mb-4">Share Shift: Original vs. Political</h3>
+                <div class="relative flex-1 w-full h-full">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 3. Key Metrics -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-bold uppercase">Linear Share</div>
+                    <div class="text-2xl font-black text-cat-cable" id="metric-linear">--%</div>
+                    <div class="text-xs text-slate-400 mt-1">Broadcast + Cable</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs text-slate-500 font-bold uppercase">CTV/Streaming</div>
+                    <div class="text-2xl font-black text-cat-streaming" id="metric-streaming">--%</div>
+                    <div class="text-xs text-slate-400 mt-1">Ad-Supported Only</div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- ADD PLATFORM MODAL -->
+    <div id="add-modal"
+        class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-4">Add New Platform</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Platform Name</label>
+                    <input type="text" id="new-name"
+                        class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        placeholder="e.g. Paramount+">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                    <select id="new-category"
+                        class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="Streaming">Streaming</option>
+                        <option value="Linear">Linear</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Initial Gauge %</label>
+                        <input type="number" id="new-share" step="0.1"
+                            class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="0.0">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Ad Supported %</label>
+                        <input type="number" id="new-adsupport" max="100" value="100"
+                            class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+                <button onclick="addPlatform()"
+                    class="px-4 py-2 text-sm font-bold text-white bg-nielsen-blue hover:bg-blue-700 rounded shadow-sm">Add
+                    Platform</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE FOR ROW -->
+    <template id="row-template">
+        <div
+            class="grid grid-cols-12 gap-2 items-center p-3 rounded-lg transition-all-200 hover:bg-slate-50 border border-transparent group">
+            <!-- Name -->
+            <div class="col-span-4 pl-2">
+                <div class="font-semibold text-sm text-slate-800 name-display truncate"></div>
+                <div class="text-xs text-slate-400 category-display"></div>
+            </div>
+
+            <!-- Original Share Input -->
+            <div class="col-span-2 flex justify-center">
+                <input type="number" step="0.1" min="0"
+                    class="share-input w-16 text-center p-1.5 border border-slate-300 rounded text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all focus:border-blue-500">
+            </div>
+
+            <!-- Ad Support % Input -->
+            <div class="col-span-3 flex justify-center">
+                <div class="relative group-input">
+                    <input type="number" min="0" max="100" step="5"
+                        class="ad-support-input w-16 text-center p-1.5 border border-slate-300 rounded text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all focus:border-blue-500">
+                    <span class="absolute right-[-12px] top-1.5 text-xs text-slate-400 pointer-events-none">%</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="col-span-3 flex justify-center items-center gap-3">
+                <!-- Toggle -->
+                <div class="relative inline-block w-10 align-middle select-none" title="Toggle inclusion">
+                    <input type="checkbox"
+                        class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300" />
+                    <label
+                        class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                </div>
+
+                <!-- Delete Button (Shows on Hover or if needed) -->
+                <button class="delete-btn text-slate-300 hover:text-red-500 transition-colors p-1 rounded"
+                    title="Remove Platform">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // --- Initial Data Configuration ---
+        const DEFAULTS = [
+            { id: 'broadcast', category: 'Linear', name: 'Broadcast', share: 20.8, adSupport: 100, active: true, color: '#dc2626' },
+            { id: 'cable', category: 'Linear', name: 'Cable', share: 24.5, adSupport: 100, active: true, color: '#ef4444' },
+            { id: 'youtube', category: 'Streaming', name: 'YouTube', share: 12.4, adSupport: 95, active: true, color: '#FF0000' },
+            { id: 'netflix', category: 'Streaming', name: 'Netflix', share: 7.8, adSupport: 15, active: true, color: '#B91C1C' },
+            { id: 'hulu', category: 'Streaming', name: 'Hulu', share: 3.1, adSupport: 85, active: true, color: '#16a34a' },
+            { id: 'prime', category: 'Streaming', name: 'Prime Video', share: 3.1, adSupport: 50, active: true, color: '#0284c7' },
+            { id: 'disney', category: 'Streaming', name: 'Disney+', share: 2.1, adSupport: 30, active: true, color: '#111827' },
+            { id: 'peacock', category: 'Streaming', name: 'Peacock', share: 1.5, adSupport: 90, active: true, color: '#eab308' },
+            { id: 'tubi', category: 'Streaming', name: 'Tubi', share: 2.0, adSupport: 100, active: true, color: '#f97316' },
+            { id: 'roku', category: 'Streaming', name: 'Roku Channel', share: 2.4, adSupport: 100, active: true, color: '#8b5cf6' },
+            { id: 'max', category: 'Streaming', name: 'Max', share: 1.0, adSupport: 75, active: true, color: '#3b82f6' },
+            { id: 'other_stream', category: 'Streaming', name: 'Other Streaming', share: 8.9, adSupport: 50, active: true, color: '#64748b' },
+            { id: 'other_tv', category: 'Other', name: 'Other TV', share: 10.4, adSupport: 0, active: false, color: '#94a3b8' },
+        ];
+
+        let appData = JSON.parse(JSON.stringify(DEFAULTS));
+        let comparisonChartInstance = null;
+
+        // --- Initialization ---
+        window.onload = function () {
+            buildInputList();
+            updateDashboard();
+        };
+
+        // --- Modal Logic ---
+        function openModal() {
+            document.getElementById('add-modal').classList.add('active');
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-share').value = '';
+            document.getElementById('new-name').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('add-modal').classList.remove('active');
+        }
+
+        function addPlatform() {
+            const name = document.getElementById('new-name').value;
+            const category = document.getElementById('new-category').value;
+            const share = parseFloat(document.getElementById('new-share').value) || 0;
+            const adSupport = parseFloat(document.getElementById('new-adsupport').value) || 0;
+
+            if (!name) {
+                alert("Please enter a platform name");
+                return;
+            }
+
+            // Generate a random color based on name hash or category
+            const color = generateColor(name, category);
+
+            const newItem = {
+                id: 'custom_' + Date.now(),
+                name,
+                category,
+                share,
+                adSupport,
+                active: true,
+                color
+            };
+
+            appData.push(newItem);
+            closeModal();
+            buildInputList(); // Rebuild list to include new item
+            updateDashboard();
+
+            // Scroll to bottom of list
+            const list = document.getElementById('input-list');
+            list.scrollTop = list.scrollHeight;
+        }
+
+        function deletePlatform(index) {
+            if (confirm(`Remove ${appData[index].name}?`)) {
+                appData.splice(index, 1);
+                buildInputList();
+                updateDashboard();
+            }
+        }
+
+        function generateColor(name, category) {
+            if (category === 'Linear') return '#ef4444';
+            if (category === 'Other') return '#94a3b8';
+            // Randomish nice colors for streaming
+            const colors = ['#0ea5e9', '#8b5cf6', '#d946ef', '#f43f5e', '#10b981', '#f59e0b'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function resetDefaults() {
+            if (confirm("Reset all data to defaults?")) {
+                appData = JSON.parse(JSON.stringify(DEFAULTS));
+                buildInputList();
+                updateDashboard();
+            }
+        }
+
+        // --- DOM Builder ---
+        function buildInputList() {
+            const container = document.getElementById('input-list');
+            container.innerHTML = '';
+            const template = document.getElementById('row-template');
+
+            appData.forEach((item, index) => {
+                const clone = template.content.cloneNode(true);
+                const row = clone.querySelector('div');
+                row.id = `row-${index}`;
+
+                // Bind static content
+                clone.querySelector('.name-display').textContent = item.name;
+                clone.querySelector('.category-display').textContent = item.category;
+
+                // Bind Inputs
+                const shareInput = clone.querySelector('.share-input');
+                shareInput.value = item.share;
+                shareInput.oninput = (e) => handleShareChange(index, e.target.value);
+
+                const adSupportInput = clone.querySelector('.ad-support-input');
+                adSupportInput.value = item.adSupport;
+                if (item.category === 'Other') adSupportInput.disabled = true;
+                adSupportInput.oninput = (e) => handleAdSupportChange(index, e.target.value);
+
+                const toggle = clone.querySelector('.toggle-checkbox');
+                toggle.id = `toggle-${index}`;
+                toggle.checked = item.active;
+                toggle.onchange = (e) => handleToggleChange(index, e.target.checked);
+
+                const label = clone.querySelector('.toggle-label');
+                label.setAttribute('for', `toggle-${index}`);
+
+                // Bind Delete
+                const deleteBtn = clone.querySelector('.delete-btn');
+                deleteBtn.onclick = () => deletePlatform(index);
+
+                container.appendChild(clone);
+                updateRowVisuals(index);
+            });
+        }
+
+        // --- Visual Helpers ---
+        function updateRowVisuals(index) {
+            const item = appData[index];
+            const row = document.getElementById(`row-${index}`);
+            if (!row) return;
+
+            if (!item.active) {
+                row.classList.add('opacity-50', 'bg-slate-50');
+                row.classList.remove('bg-white', 'shadow-sm');
+            } else {
+                row.classList.remove('opacity-50', 'bg-slate-50');
+                row.classList.add('bg-white');
+                // Check if linear or streaming for subtle tint
+                if (item.category === 'Linear') row.classList.add('border-l-4', 'border-l-red-500');
+                else if (item.category === 'Streaming') row.classList.add('border-l-4', 'border-l-purple-500');
+            }
+        }
+
+        // --- Logic Handlers ---
+        function handleShareChange(index, val) {
+            appData[index].share = parseFloat(val) || 0;
+            updateDashboard();
+        }
+
+        function handleAdSupportChange(index, val) {
+            let num = parseFloat(val) || 0;
+            if (num > 100) num = 100;
+            if (num < 0) num = 0;
+            appData[index].adSupport = num;
+            updateDashboard();
+        }
+
+        function handleToggleChange(index, isChecked) {
+            appData[index].active = isChecked;
+            updateRowVisuals(index);
+            updateDashboard();
+        }
+
+        // --- Core Calculation & Dashboard Update ---
+        function updateDashboard() {
+            // 1. Calculate Effective Shares
+            let totalEffective = 0;
+
+            const calculatedData = appData.map(item => {
+                const effective = item.active
+                    ? item.share * (item.adSupport / 100)
+                    : 0;
+
+                totalEffective += effective;
+                return { ...item, effective };
+            });
+
+            // 2. Calculate New 100% Shares (The "Political Gauge")
+            const rebalancedData = calculatedData.map(item => {
+                return {
+                    ...item,
+                    politicalShare: totalEffective > 0 ? (item.effective / totalEffective) * 100 : 0
+                };
+            });
+
+            // 3. Update Visuals
+            updateHeaderTotal(totalEffective);
+            renderStackedGauge(rebalancedData);
+            updateChart(rebalancedData);
+            updateMetrics(rebalancedData);
+        }
+
+        function updateHeaderTotal(total) {
+            document.getElementById('header-total-share').textContent = total.toFixed(1) + '%';
+        }
+
+        function updateMetrics(data) {
+            const linearSum = data
+                .filter(d => d.category === 'Linear')
+                .reduce((sum, d) => sum + d.politicalShare, 0);
+
+            const streamingSum = data
+                .filter(d => d.category === 'Streaming')
+                .reduce((sum, d) => sum + d.politicalShare, 0);
+
+            document.getElementById('metric-linear').textContent = linearSum.toFixed(1) + '%';
+            document.getElementById('metric-streaming').textContent = streamingSum.toFixed(1) + '%';
+        }
+
+        // --- Rendering the Custom Stacked Bar (The Gauge) ---
+        function renderStackedGauge(data) {
+            const container = document.getElementById('gauge-bar-container');
+            const legend = document.getElementById('gauge-legend');
+
+            container.innerHTML = '';
+            legend.innerHTML = '';
+
+            // Filter out 0% shares for cleanliness
+            const activeSegments = data.filter(d => d.politicalShare > 0.5);
+
+            // Sort: Linear first, then largest streaming players
+            activeSegments.sort((a, b) => {
+                if (a.category === 'Linear' && b.category !== 'Linear') return -1;
+                if (b.category === 'Linear' && a.category !== 'Linear') return 1;
+                return b.politicalShare - a.politicalShare;
+            });
+
+            activeSegments.forEach(item => {
+                // Create Bar Segment
+                const div = document.createElement('div');
+                div.style.width = `${item.politicalShare}%`;
+                div.style.backgroundColor = item.color;
+                div.className = 'h-full flex items-center justify-center relative group transition-all duration-500 border-r border-slate-900/20 last:border-r-0';
+
+                // Tooltip logic
+                div.title = `${item.name}: ${item.politicalShare.toFixed(1)}%`;
+
+                // Label inside bar if wide enough
+                if (item.politicalShare > 5) {
+                    const label = document.createElement('span');
+                    label.className = 'text-[10px] font-bold text-white drop-shadow-md truncate px-1 pointer-events-none';
+                    label.textContent = `${item.politicalShare.toFixed(0)}%`;
+                    div.appendChild(label);
+                }
+
+                container.appendChild(div);
+
+                // Create Legend Item
+                const legItem = document.createElement('div');
+                legItem.className = 'flex items-center gap-1 mr-2 mb-1 bg-slate-800 px-2 py-1 rounded-full';
+                legItem.innerHTML = `
+                    <div class="w-2 h-2 rounded-full" style="background-color: ${item.color}"></div>
+                    <span class="font-medium text-slate-300 text-[10px]">${item.name}</span>
+                    <span class="font-bold text-white text-[10px]">(${item.politicalShare.toFixed(1)}%)</span>
+                `;
+                legend.appendChild(legItem);
+            });
+        }
+
+        // --- Chart.js for Comparison ---
+        function updateChart(data) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+            // Filter for meaningful data only for the chart labels
+            // We keep the full list but let ChartJS handle scaling.
+
+            const labels = data.map(d => d.name);
+            const originalData = data.map(d => d.share);
+            const politicalData = data.map(d => d.politicalShare);
+
+            if (comparisonChartInstance) {
+                comparisonChartInstance.data.labels = labels;
+                comparisonChartInstance.data.datasets[0].data = originalData;
+                comparisonChartInstance.data.datasets[1].data = politicalData;
+                comparisonChartInstance.update();
+            } else {
+                comparisonChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Original Gauge Share',
+                                data: originalData,
+                                backgroundColor: '#e2e8f0',
+                                borderRadius: 3,
+                                barPercentage: 0.7,
+                                categoryPercentage: 0.8
+                            },
+                            {
+                                label: 'New Political Share',
+                                data: politicalData,
+                                backgroundColor: '#0066cc',
+                                borderRadius: 3,
+                                barPercentage: 0.7,
+                                categoryPercentage: 0.8
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 10 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+</body>
+
+</html>
