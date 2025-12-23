@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRP & TRP Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            /* Light, clean background */
+        }
+
+        /* The main card for each demographic */
+        .demographic-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            /* 12px */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease-in-out;
+            border-top: 4px solid #2563eb;
+            /* Blue accent */
+        }
+
+        /* Editable title for the card */
+        .title-input {
+            @apply text-lg font-bold text-gray-800 bg-transparent focus:bg-gray-100 rounded-md p-2 -ml-2 w-full sm:w-2/3 border-2 border-transparent focus:border-blue-300 focus:outline-none transition-colors duration-200;
+        }
+
+        /* Labels for the input fields */
+        .input-label {
+            @apply block mb-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider;
+        }
+
+        /* The actual input fields */
+        .input-field {
+            @apply w-full bg-white border-2 border-gray-200 text-gray-900 text-base rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-all duration-200;
+        }
+
+        /* Labels for the calculated output fields */
+        .output-label {
+            @apply block mb-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center;
+        }
+
+        /* The calculated values - the star of the show */
+        .calculated-field {
+            @apply w-full text-blue-600 text-3xl rounded-md block p-2 font-extrabold text-center;
+        }
+
+        .remove-btn {
+            @apply text-gray-400 hover:text-red-500 transition-all duration-200 transform hover:scale-110;
+        }
+
+        /* The main "Add" button */
+        .add-btn {
+            @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/50;
+        }
+
+        /* Drag and Drop Styles */
+        .draggable-source {
+            cursor: move;
+        }
+
+        .dragging {
+            opacity: 0.5;
+            border: 2px dashed #2563eb;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .drag-handle:hover {
+            color: #2563eb;
+            cursor: grabbing;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-3xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Digital Points Calculator</h1>
+            <p class="text-md text-gray-600 mt-2">A clear and simple calculator for your media planning.</p>
+        </header>
+
+        <!-- Plan Management Section -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 items-end md:items-center justify-between">
+                <div class="w-full md:w-1/2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
+                    <input type="text" id="plan-name"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="e.g., Q4 Streaming Campaign">
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <button id="settings-btn"
+                        class="flex-1 md:flex-none text-gray-500 hover:text-gray-700 p-2 rounded-lg transition-colors"
+                        title="Settings">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                    <button id="new-plan-btn"
+                        class="flex-1 md:flex-none bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                        New
+                    </button>
+                    <button id="load-plan-btn"
+                        class="flex-1 md:flex-none bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                        Load
+                    </button>
+                    <button id="save-plan-btn"
+                        class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container for all the demographic cards -->
+        <div id="calculator-body" class="space-y-6">
+            <!-- Demographic cards will be dynamically inserted here -->
+        </div>
+
+        <div class="mt-8 flex justify-center">
+            <button id="add-card-btn" class="add-btn">
+                <svg class="inline-block w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Demographic
+            </button>
+        </div>
+
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>&copy; 2024 GRP & TRP Calculator</p>
+        </footer>
+    </div>
+
+    <!-- Load Plan Modal -->
+    <div id="load-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative p-5 border w-full max-w-md shadow-lg rounded-xl bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Saved Plans</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div id="saved-plans-list" class="space-y-2 max-h-96 overflow-y-auto">
+                <!-- Saved plans will be inserted here -->
+                <p class="text-center text-gray-500 py-4">No saved plans found.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative p-5 border w-full max-w-md shadow-lg rounded-xl bg-white">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Configuration</h3>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Google App Script URL</label>
+                <input type="text" id="api-url-input"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://script.google.com/macros/s/...">
+                <p class="text-xs text-gray-500 mt-1">Deploy your Google Sheet script and paste the Web App URL here.
+                </p>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button id="close-settings-btn"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                    Close
+                </button>
+                <button id="save-settings-btn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                    Save Config
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calculatorBody = document.getElementById('calculator-body');
+            const addCardBtn = document.getElementById('add-card-btn');
+            const planNameInput = document.getElementById('plan-name');
+            const savePlanBtn = document.getElementById('save-plan-btn');
+            const loadPlanBtn = document.getElementById('load-plan-btn');
+            const newPlanBtn = document.getElementById('new-plan-btn');
+            const loadModal = document.getElementById('load-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const savedPlansList = document.getElementById('saved-plans-list');
+
+            // Settings UI
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModal = document.getElementById('settings-modal');
+            const closeSettingsBtn = document.getElementById('close-settings-btn');
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+            const apiUrlInput = document.getElementById('api-url-input');
+
+            // Config
+            let apiUrl = localStorage.getItem('googleSheetApiUrl') || 'https://script.google.com/macros/s/AKfycbwjTgt3XYrho7920OALgqPlUpAVX0KsQnJ5AwSQmncROyzXLc37udbIBXd5zc7q-kcw/exec';
+            let currentPlanId = null;
+
+            // Init
+            apiUrlInput.value = apiUrl;
+
+            // --- Helper Functions ---
+            const formatWholeCurrency = (value) => {
+                if (isNaN(value) || !isFinite(value)) return '$0';
+                return value.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            };
+
+            const formatWholeNumber = (value) => {
+                if (isNaN(value) || !isFinite(value)) return '0';
+                return Math.round(value).toLocaleString();
+            }
+
+            // --- Calculation Logic ---
+            const calculateCard = (card) => {
+                const population = parseFloat(card.querySelector('.population-input').value) || 0;
+                const cpm = parseFloat(card.querySelector('.cpm-input').value) || 0;
+                const impressions = parseFloat(card.querySelector('.impressions-input').value) || 0;
+
+                const grpsDisplay = card.querySelector('.grps-display');
+                const costDisplay = card.querySelector('.cost-display');
+                const cppDisplay = card.querySelector('.cpp-display');
+
+                const cpp = (cpm > 0 && population > 0) ? (cpm * population) / 100000 : 0;
+                cppDisplay.textContent = formatWholeCurrency(cpp);
+
+                const grps = population > 0 ? (impressions / population) * 100 : 0;
+                grpsDisplay.textContent = formatWholeNumber(grps);
+
+                const totalCost = (impressions / 1000) * cpm;
+                costDisplay.textContent = formatWholeCurrency(totalCost);
+            };
+
+            // --- UI Management ---
+            const addDemographicCard = (data = {}) => {
+                const card = document.createElement('div');
+                card.className = 'demographic-card';
+                card.setAttribute('draggable', 'true');
+
+                const { channel = '', population = '', cpm = '', impressions = '' } = data;
+                const uniqueId = crypto.randomUUID();
+
+                card.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex justify-between items-start sm:items-center mb-5">
+                            <div class="flex items-center gap-2 flex-1">
+                                <div class="drag-handle p-1" title="Drag to reorder">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                                </div>
+                                <input type="text" class="title-input" placeholder="Enter Demographic Name" value="${channel}">
+                            </div>
+                            <button class="remove-btn p-1 flex-shrink-0" title="Remove Demographic">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+
+                        <!-- Input Section -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4">
+                            <div>
+                                <label class="input-label" for="pop-${uniqueId}">Population</label>
+                                <input type="number" id="pop-${uniqueId}" class="input-field population-input" placeholder="e.g., 6,800,000" value="${population}">
+                            </div>
+                            <div>
+                                <label class="input-label" for="cpm-${uniqueId}">CPM</label>
+                                <input type="number" step="0.01" id="cpm-${uniqueId}" class="input-field cpm-input" placeholder="e.g., 37.50" value="${cpm}">
+                            </div>
+                            <div>
+                                <label class="input-label" for="imp-${uniqueId}">Impressions</label>
+                                <input type="number" id="imp-${uniqueId}" class="input-field impressions-input" placeholder="e.g., 13,000,000" value="${impressions}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Divider and Output Section -->
+                    <div class="bg-slate-50 p-6 rounded-b-lg">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <label class="output-label">Cost Per Point:</label>
+                                <span class="calculated-field cpp-display">$0</span>
+                            </div>
+                            <div class="text-center">
+                                <label class="output-label">GRPs / TRPs:</label>
+                                <span class="calculated-field grps-display">0</span>
+                            </div>
+                            <div class="text-center">
+                                <label class="output-label">Total Cost:</label>
+                                <span class="calculated-field cost-display">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                calculatorBody.appendChild(card);
+                card.addEventListener('input', () => calculateCard(card));
+                card.querySelector('.remove-btn').addEventListener('click', () => {
+                    if (confirm('Are you sure you want to remove this demographic?')) {
+                        card.style.transform = 'scale(0.95)';
+                        card.style.opacity = '0';
+                        setTimeout(() => card.remove(), 300);
+                    }
+                });
+                calculateCard(card);
+
+                // Drag and Drop Events
+                card.addEventListener('dragstart', () => {
+                    card.classList.add('dragging');
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                });
+            };
+
+            // Container Drag Events
+            calculatorBody.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(calculatorBody, e.clientY);
+                const draggable = document.querySelector('.dragging');
+                if (afterElement == null) {
+                    calculatorBody.appendChild(draggable);
+                } else {
+                    calculatorBody.insertBefore(draggable, afterElement);
+                }
+            });
+
+            const getDragAfterElement = (container, y) => {
+                const draggableElements = [...container.querySelectorAll('.demographic-card:not(.dragging)')];
+
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            };
+
+            const clearBoard = () => {
+                calculatorBody.innerHTML = '';
+                planNameInput.value = '';
+                currentPlanId = null;
+            };
+
+            // --- State & Storage ---
+            const getPlanState = () => {
+                const cards = [];
+                document.querySelectorAll('.demographic-card').forEach(card => {
+                    cards.push({
+                        channel: card.querySelector('.title-input').value,
+                        population: card.querySelector('.population-input').value,
+                        cpm: card.querySelector('.cpm-input').value,
+                        impressions: card.querySelector('.impressions-input').value
+                    });
+                });
+                return {
+                    id: currentPlanId || crypto.randomUUID(),
+                    name: planNameInput.value || 'Untitled Plan',
+                    updatedAt: new Date().toISOString(),
+                    cards: cards
+                };
+            };
+
+            const savePlan = async () => {
+                if (!apiUrl) {
+                    toggleSettings(true);
+                    alert('Please configure your Google Sheet API URL first.');
+                    return;
+                }
+
+                // UI Loading State
+                const originalText = savePlanBtn.textContent;
+                savePlanBtn.textContent = 'Saving...';
+                savePlanBtn.disabled = true;
+
+                const plan = getPlanState();
+                currentPlanId = plan.id;
+
+                try {
+                    await fetch(apiUrl, {
+                        method: 'POST',
+                        mode: 'no-cors', // 'no-cors' is needed for simple Apps Script simple triggers, response is opaque
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8',
+                        },
+                        body: JSON.stringify(plan)
+                    });
+
+                    // Success Visuals
+                    savePlanBtn.textContent = 'Saved!';
+                    savePlanBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    savePlanBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+
+                    setTimeout(() => {
+                        savePlanBtn.textContent = originalText;
+                        savePlanBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        savePlanBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                        savePlanBtn.disabled = false;
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Error saving:', error);
+                    alert('Failed to save to Google Sheets. Check console.');
+                    savePlanBtn.textContent = originalText;
+                    savePlanBtn.disabled = false;
+                }
+            };
+
+            const loadPlan = async (id) => {
+                // We need to re-fetch to get the specific plan details if we didn't store them all
+                // But for now, let's assuming we have the plan object from the list view if we change implementation
+                // OR we just fetch all again.
+                // CURRENT IMPLEMENTATION: We fetched ALL plans to populate the list. 
+                // To keep it simple, we will use the data form the list rendering (which we should cache).
+
+                // Optimized: Fetch ALL plans, find the one with ID. 
+                // Since we just fetched to show the list, we can store them in memory.
+
+                toggleModal(true); // Open modal to show loading or list
+            };
+
+            const loadPlansFromApi = async () => {
+                if (!apiUrl) {
+                    toggleSettings(true);
+                    return;
+                }
+
+                savedPlansList.innerHTML = '<p class="text-center text-gray-500 py-4">Loading plans from Google Sheets...</p>';
+
+                try {
+                    const response = await fetch(apiUrl);
+                    const plans = await response.json();
+                    renderSavedPlansList(plans);
+                } catch (error) {
+                    console.error('Load error:', error);
+                    savedPlansList.innerHTML = '<p class="text-center text-red-500 py-4">Error loading plans.</p>';
+                }
+            };
+
+            const loadSpecificPlanState = (plan) => {
+                if (!plan) return;
+
+                clearBoard();
+                currentPlanId = plan.id;
+                planNameInput.value = plan.name;
+
+                if (plan.cards && plan.cards.length > 0) {
+                    plan.cards.forEach(cardData => addDemographicCard(cardData));
+                } else {
+                    addDemographicCard({ channel: 'Streaming 18+' });
+                }
+
+                toggleModal(false);
+            };
+
+            const deletePlan = (id, event) => {
+                event.stopPropagation();
+                if (!confirm('Deletion via Sheets API is not yet implemented in this version (Requires extra script logic). You can delete rows in the Sheet manually.')) return;
+            };
+
+            const renderSavedPlansList = (savedPlans = {}) => {
+                savedPlansList.innerHTML = '';
+
+                const plansArray = Object.values(savedPlans).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+                if (plansArray.length === 0) {
+                    savedPlansList.innerHTML = '<p class="text-center text-gray-500 py-4">No saved plans found in Sheet.</p>';
+                    return;
+                }
+
+                plansArray.forEach(plan => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg border border-transparent hover:border-gray-200 cursor-pointer transition-colors';
+                    item.innerHTML = `
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-800">${plan.name}</div>
+                            <div class="text-xs text-gray-500">${new Date(plan.updatedAt).toLocaleDateString()} ${new Date(plan.updatedAt).toLocaleTimeString()}</div>
+                        </div>
+                    `;
+
+                    item.addEventListener('click', () => loadSpecificPlanState(plan));
+                    savedPlansList.appendChild(item);
+                });
+            };
+
+            const toggleModal = (show) => {
+                if (show) {
+                    loadPlansFromApi(); // Fetch on open
+                    loadModal.classList.remove('hidden');
+                } else {
+                    loadModal.classList.add('hidden');
+                }
+            };
+
+            const toggleSettings = (show) => {
+                if (show) {
+                    settingsModal.classList.remove('hidden');
+                } else {
+                    settingsModal.classList.add('hidden');
+                }
+            };
+
+            // --- Event Listeners ---
+            addCardBtn.addEventListener('click', () => addDemographicCard());
+
+            savePlanBtn.addEventListener('click', savePlan);
+
+            loadPlanBtn.addEventListener('click', () => toggleModal(true));
+
+            newPlanBtn.addEventListener('click', () => {
+                if (confirm('Create new plan? Any unsaved changes will be lost.')) {
+                    clearBoard();
+                    addDemographicCard({ channel: 'Streaming 18+' });
+                }
+            });
+
+            closeModalBtn.addEventListener('click', () => toggleModal(false));
+
+            // Close modal on outside click
+            loadModal.addEventListener('click', (e) => {
+                if (e.target === loadModal) toggleModal(false);
+            });
+
+            // Settings Events
+            settingsBtn.addEventListener('click', () => toggleSettings(true));
+            closeSettingsBtn.addEventListener('click', () => toggleSettings(false));
+            settingsModal.addEventListener('click', (e) => {
+                if (e.target === settingsModal) toggleSettings(false);
+            });
+
+            saveSettingsBtn.addEventListener('click', () => {
+                apiUrl = apiUrlInput.value.trim();
+                localStorage.setItem('googleSheetApiUrl', apiUrl);
+                toggleSettings(false);
+                alert('Configuration saved!');
+            });
+
+            // Initialize
+            addDemographicCard({ channel: 'Streaming 18+' });
+        });
+    </script>
+</body>
+
+</html>
