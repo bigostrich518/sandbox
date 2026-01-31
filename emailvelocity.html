@@ -387,12 +387,13 @@
             const ctx = document.getElementById('velocityChart').getContext('2d');
 
             // Downsample for chart if too many points
-            // For now, take last 50 points
             const chartData = data.slice(-50);
 
             const labels = chartData.map(d => moment(d.ts).format('HH:mm'));
-            const inflows = chartData.map(d => d.inflow || 0);
-            const sents = chartData.map(d => d.sent || 0); // New 'sent' data
+            // INFLOW is negative (Gravity/Drag)
+            const inflows = chartData.map(d => -Math.abs(d.inflow || 0));
+            // SENT is positive (Lift/Velocity)
+            const sents = chartData.map(d => Math.abs(d.sent || 0));
 
             if (STATE.chart) {
                 STATE.chart.data.labels = labels;
@@ -409,19 +410,19 @@
                         labels: labels,
                         datasets: [
                             {
-                                label: 'Inflow',
+                                label: 'Inflow (Drag)',
                                 data: inflows,
-                                borderColor: '#bc13fe',
-                                backgroundColor: 'rgba(188, 19, 254, 0.1)',
+                                borderColor: '#bc13fe', // Neon Purple
+                                backgroundColor: 'rgba(188, 19, 254, 0.4)',
                                 tension: 0.4,
                                 fill: true,
                                 yAxisID: 'y'
                             },
                             {
-                                label: 'Sent',
+                                label: 'Exit Velocity (Lift)',
                                 data: sents,
-                                borderColor: '#00f3ff', // Blue for Sent/Exit
-                                backgroundColor: 'rgba(0, 243, 255, 0.1)',
+                                borderColor: '#00f3ff', // Neon Blue
+                                backgroundColor: 'rgba(0, 243, 255, 0.4)',
                                 tension: 0.4,
                                 fill: true,
                                 yAxisID: 'y'
@@ -435,25 +436,44 @@
                             mode: 'index',
                             intersect: false,
                         },
+                        plugins: {
+                            legend: {
+                                display: false // Hide legend for cleaner look
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        // Always show positive numbers in tooltip
+                                        if (context.parsed.y !== null) {
+                                            label += Math.abs(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 type: 'linear',
-                                display: true,
+                                display: false, // Hide Y axis labels for cleaner "Equalizer" look
                                 position: 'left',
-                                title: { display: true, text: 'Emails Count' }
+                                grid: {
+                                    color: (context) => {
+                                        if (context.tick.value === 0) return 'rgba(255, 255, 255, 0.5)'; // ZERO LINE
+                                        return 'rgba(255, 255, 255, 0.05)';
+                                    }
+                                }
                             },
                             x: {
                                 grid: {
                                     display: false
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    usePointStyle: true,
-                                    boxWidth: 8
+                                },
+                                ticks: {
+                                    display: false // Minimize X axis clutter too
                                 }
                             }
                         }
