@@ -40,12 +40,19 @@ function logEmailStats() {
     if (!sheet) return; // Run setup first
 
     const now = new Date();
-    const fiveMinAgo = new Date(now.getTime() - (5 * 60 * 1000));
-    // Convert to seconds for Gmail query
-    const timeQuery = Math.floor(fiveMinAgo.getTime() / 1000);
 
-    // 1. INFLOW: Messages received in the last 5 minutes (excluding sent by me)
-    // "newer_than:5m -from:me" could work, but using timestamp is safer for consistent intervals if cron drifts
+    // DYNAMIC TIME WINDOW: Get the last run time from storage, or default to 1 hour ago if first run
+    const scriptProperties = PropertiesService.getScriptProperties();
+    const lastRunStr = scriptProperties.getProperty('LAST_RUN_TIME');
+    let lastRunTime = lastRunStr ? new Date(parseInt(lastRunStr)) : new Date(now.getTime() - (60 * 60 * 1000));
+
+    // Save THIS run time for next time
+    scriptProperties.setProperty('LAST_RUN_TIME', now.getTime().toString());
+
+    // Convert to seconds for Gmail query
+    const timeQuery = Math.floor(lastRunTime.getTime() / 1000);
+
+    // 1. INFLOW: Messages received since the last run
     const inflowQuery = `after:${timeQuery} -from:me`;
     const inflowThreads = GmailApp.search(inflowQuery);
     const inflowCount = inflowThreads.length; // Approximate, counts threads not messages, but good enough for velocity

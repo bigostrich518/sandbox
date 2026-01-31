@@ -333,14 +333,33 @@
             const deltaInbox = endInbox - startInbox;
             const derivedOutflow = inflowSum - deltaInbox;
 
-            // Normalize to hourly rate if we have less than an hour of data
-            // But simplified: sum is good enough if we assume we have approx 12 samples (5 min intervals)
-            // If fewer samples, project it.
-            const coverageFactor = recentData.length > 0 ? (60 / (recentData.length * 5)) : 1;
+            // DYNAMIC DURATION CALCULATION
+            // Instead of assuming 5 min intervals, we calculate the actual time span covered by the data
+            let coverageRatio = 1;
+            if (recentData.length > 1) {
+                const startTime = recentData[0].ts.getTime();
+                const endTime = recentData[recentData.length - 1].ts.getTime();
+                const durationMinutes = (endTime - startTime) / 1000 / 60;
 
-            const hourlyInflow = Math.round(inflowSum * coverageFactor);
+                // If we have 50 mins of data, we scale up by (60/50) to get hourly rate
+                // We add "1 interval" of buffer roughly to account for the "current" period being full? 
+                // Actually, simplest is: (Count / DurationMinutes) * 60
+                // But avoid divide by zero for single point.
+
+                if (durationMinutes > 5) {
+                    coverageRatio = 60 / durationMinutes;
+                }
+            } else if (recentData.length === 1) {
+                // If we only have 1 data point (e.g. hourly cron), assume it covers the interval it represents?
+                // Impossible to know purely from 1 point unless we assume.
+                // If the point inflow is huge (e.g. 50), it's likely hourly. If small (2), likely 5-min.
+                // Safer: Just show the raw sum for now if it's the only data point.
+                coverageRatio = 1;
+            }
+
+            const hourlyInflow = Math.round(inflowSum * coverageRatio);
             // Ensure outflow isn't negative due to sync oddities
-            const hourlyOutflow = Math.max(0, Math.round(derivedOutflow * coverageFactor));
+            const hourlyOutflow = Math.max(0, Math.round(derivedOutflow * coverageRatio));
 
             // Current Stats
             const current = data[data.length - 1];
