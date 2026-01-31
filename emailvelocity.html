@@ -180,14 +180,14 @@
             <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-bl-full -mr-4 -mt-4"></div>
                 <div class="flex flex-col h-full justify-between relative z-10">
-                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Inbox Load</div>
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Unread Load</div>
                     <div class="flex items-baseline gap-2">
                         <span class="text-4xl font-bold text-white" id="val-inbox">--</span>
                         <span class="text-sm text-gray-500">emails</span>
                     </div>
                     <div class="text-xs text-gray-500 mt-4 flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-neon-green"></span>
-                        <span id="val-unread">--</span> Unread
+                        Active Backlog
                     </div>
                 </div>
             </div>
@@ -344,10 +344,11 @@
             // 2. Render Cards
             updateMetric('val-inflow', hourlyInflow);
             updateMetric('val-sent', hourlySent);
-            updateMetric('val-inbox', current.inbox);
-            document.getElementById('val-unread').textContent = current.unread;
+            // We now show UNREAD as the main "Inbox Load"
+            updateMetric('val-inbox', current.unread);
 
             // Bars Width
+            // Max arbitrary scale: 100 emails/hr?
             const maxScale = Math.max(50, hourlyInflow, hourlySent); // Scale to max activity
             document.getElementById('bar-inflow').style.width = `${Math.min(100, (hourlyInflow / maxScale) * 100)}%`;
             document.getElementById('bar-sent').style.width = `${Math.min(100, (hourlySent / maxScale) * 100)}%`;

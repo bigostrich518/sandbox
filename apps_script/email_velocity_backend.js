@@ -63,12 +63,13 @@ function logEmailStats() {
     const sentCount = sentThreads.length;
 
     // SNAPSHOT METRICS
-    const inboxThreads = GmailApp.getInboxThreads(0, 500);
     const unreadCount = GmailApp.getInboxUnreadCount();
-    const totalInboxThreads = GmailApp.search("label:inbox").length;
 
-    // STORE: [Timestamp, Inflow, Sent, Inbox Total, Unread Total]
-    // We are replacing the old "Outflow" column (index 2) with "Sent"
+    // Note: We are deprecating "Total Inbox" using search because it hits API limits (max 500).
+    // Unless we use Advanced Gmail API, Unread is the best proxy for "Active Load".
+    const totalInboxThreads = 0; // Deprecated placeholder
+
+    // STORE: [Timestamp, Inflow, Sent, Inbox(Deprecated), Unread]
     sheet.appendRow([now, inflowCount, sentCount, totalInboxThreads, unreadCount]);
 
     // Prune old data (keep last 30 days ~ 8640 rows at 5min interval)
