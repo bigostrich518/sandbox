@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Velocity Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Space Grotesk', 'sans-serif'] },
+                    colors: {
+                        neon: {
+                            blue: '#00f3ff',
+                            purple: '#bc13fe',
+                            green: '#0aff0a',
+                            pink: '#ff0099',
+                            dark: '#0a0a12'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050507;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.05) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 25%);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .neon-purple {
+            text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+        }
+
+        .neon-green {
+            text-shadow: 0 0 10px rgba(10, 255, 10, 0.5);
+        }
+
+        .gauge-bg {
+            stroke: #1f2937;
+        }
+
+        .gauge-fill {
+            transition: stroke-dashoffset 1s ease-in-out;
+            stroke-linecap: round;
+        }
+    </style>
+</head>
+
+<body class="text-gray-300 min-h-screen flex flex-col overflow-x-hidden selection:bg-neon-pink selection:text-white">
+
+    <!-- Config Modal -->
+    <div id="config-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="glass-panel p-8 rounded-2xl w-full max-w-lg mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-white text-center">Connect Your Inbox</h2>
+            <p class="mb-4 text-sm text-gray-400 text-center">
+                Paste your Google Web App URL below to start tracking.
+            </p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-neon-blue mb-2">Web App URL</label>
+                    <input type="text" id="api-url-input"
+                        class="w-full bg-black/50 border border-gray-800 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all text-white placeholder-gray-700"
+                        placeholder="https://script.google.com/macros/s/...">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-neon-purple mb-2">API Key</label>
+                    <input type="password" id="api-key-input"
+                        class="w-full bg-black/50 border border-gray-800 rounded-lg px-4 py-3 focus:border-neon-purple focus:outline-none focus:ring-1 focus:ring-neon-purple transition-all text-white placeholder-gray-700"
+                        placeholder="Secret key from your script">
+                </div>
+                <button onclick="saveConfig()"
+                    class="w-full bg-neon-blue hover:bg-cyan-400 text-black font-bold py-3 rounded-lg transition-all transform hover:scale-[1.02] shadow-[0_0_20px_rgba(0,243,255,0.3)]">
+                    INITIALIZE SYSTEM
+                </button>
+            </div>
+            <p class="mt-6 text-xs text-center text-gray-600">
+                Data is stored securely in your own Google Sheet.<br>No third-party trackers.
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <main
+        class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col gap-8 opacity-50 blur-sm transition-all duration-700"
+        id="dashboard">
+
+        <!-- Header -->
+        <header class="flex justify-between items-end border-b border-gray-800 pb-6">
+            <div>
+                <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
+                    INBOX <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple animate-pulse-slow">VELOCITY</span>
+                </h1>
+                <p class="text-gray-500 font-mono text-sm tracking-widest uppercase">
+                    Real-time Inflow/Outflow Monitoring
+                </p>
+            </div>
+            <div class="text-right hidden sm:block">
+                <div class="text-xs text-gray-500 font-mono mb-1">CURRENT STATUS</div>
+                <div id="connection-status"
+                    class="flex items-center justify-end gap-2 text-neon-green text-sm font-bold">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-green"></span>
+                    </span>
+                    SYSTEM ONLINE
+                </div>
+            </div>
+        </header>
+
+        <!-- Top Metrics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- Metric 1: The Firehose (Incoming) -->
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                <div
+                    class="absolute top-0 right-0 w-20 h-20 bg-neon-purple/10 rounded-bl-full -mr-4 -mt-4 transition-all group-hover:bg-neon-purple/20">
+                </div>
+                <div class="flex flex-col h-full justify-between relative z-10">
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Inflow Velocity</div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-bold text-white neon-purple" id="val-inflow">--</span>
+                        <span class="text-sm text-gray-500">emails/hr</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-1 mt-4 rounded-full overflow-hidden">
+                        <div id="bar-inflow" class="h-full bg-neon-purple transition-all duration-1000 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 2: The Drain (Processing) -->
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                <div
+                    class="absolute top-0 right-0 w-20 h-20 bg-neon-blue/10 rounded-bl-full -mr-4 -mt-4 transition-all group-hover:bg-neon-blue/20">
+                </div>
+                <div class="flex flex-col h-full justify-between relative z-10">
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Processing Rate</div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-bold text-white neon-text" id="val-outflow">--</span>
+                        <span class="text-sm text-gray-500">emails/hr</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-1 mt-4 rounded-full overflow-hidden">
+                        <div id="bar-outflow" class="h-full bg-neon-blue transition-all duration-1000 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 3: Current Load -->
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-bl-full -mr-4 -mt-4"></div>
+                <div class="flex flex-col h-full justify-between relative z-10">
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Inbox Load</div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-bold text-white" id="val-inbox">--</span>
+                        <span class="text-sm text-gray-500">emails</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-4 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-neon-green"></span>
+                        <span id="val-unread">--</span> Unread
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 4: Zero Forecast -->
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-neon-green/10 rounded-bl-full -mr-4 -mt-4"></div>
+                <div class="flex flex-col h-full justify-between relative z-10">
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Time to Zero</div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-white neon-green" id="val-forecast">--</span>
+                        <span class="text-sm text-gray-500">hours</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-4" id="forecast-msg">
+                        Based on current pace
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chart Section -->
+        <div class="col-span-1 lg:col-span-2 glass-panel p-6 rounded-2xl min-h-[400px] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-white">Velocity Trend</h3>
+                <div class="flex gap-2">
+                    <button
+                        class="px-3 py-1 text-xs font-mono bg-white/10 hover:bg-white/20 rounded text-white transition-colors active">24H</button>
+                    <button
+                        class="px-3 py-1 text-xs font-mono bg-transparent hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors">7D</button>
+                </div>
+            </div>
+            <div class="relative flex-1 w-full h-full">
+                <canvas id="velocityChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-8 text-gray-700 text-xs font-mono">
+        SYSTEM_ID: EMAIL_VELOCITY_V1.0 // <a href="#" onclick="showConfig()"
+            class="hover:text-neon-blue underline">RECONFIGURE</a>
+    </footer>
+
+    <script>
+        // --- CONFIG ---
+        const CONFIG = {
+            storageKeyUrl: 'email_velocity_url',
+            storageKeyKey: 'email_velocity_key',
+            pollInterval: 60000
+        };
+
+        const STATE = {
+            url: localStorage.getItem(CONFIG.storageKeyUrl),
+            key: localStorage.getItem(CONFIG.storageKeyKey),
+            data: [],
+            chart: null
+        };
+
+        // --- INIT ---
+        window.onload = function () {
+            if (!STATE.url || !STATE.key) {
+                document.getElementById('config-modal').classList.remove('hidden');
+            } else {
+                initDashboard();
+            }
+        };
+
+        function saveConfig() {
+            const url = document.getElementById('api-url-input').value.trim();
+            const key = document.getElementById('api-key-input').value.trim();
+
+            if (url && key) {
+                localStorage.setItem(CONFIG.storageKeyUrl, url);
+                localStorage.setItem(CONFIG.storageKeyKey, key);
+                STATE.url = url;
+                STATE.key = key;
+                document.getElementById('config-modal').classList.add('hidden');
+                initDashboard();
+            }
+        }
+
+        function showConfig() {
+            document.getElementById('api-url-input').value = STATE.url || '';
+            document.getElementById('api-key-input').value = STATE.key || '';
+            document.getElementById('config-modal').classList.remove('hidden');
+        }
+
+        function initDashboard() {
+            // Reveal Dashboard
+            const dashboard = document.getElementById('dashboard');
+            dashboard.classList.remove('opacity-50', 'blur-sm');
+            dashboard.classList.add('opacity-100', 'blur-0');
+
+            fetchData();
+            // Refresh every 5 mins. Note: setInterval uses ms.
+            setInterval(fetchData, 5 * 60 * 1000);
+        }
+
+        async function fetchData() {
+            try {
+                // Append Key
+                const fetchUrl = `${STATE.url}?key=${encodeURIComponent(STATE.key)}`;
+                const response = await fetch(fetchUrl);
+                const json = await response.json();
+
+                if (json.status === 'success') {
+                    // Process Data
+                    STATE.data = json.data.map(d => ({
+                        ...d,
+                        ts: new Date(d.ts)
+                    }));
+
+                    updateUI();
+                } else {
+                    console.error("API Error", json.message);
+                    document.getElementById('connection-status').innerHTML = `<span class="text-red-500">AUTH FAILED</span>`;
+                }
+            } catch (e) {
+                console.error("Fetch Error", e);
+                document.getElementById('connection-status').innerHTML = `<span class="text-red-500">OFFLINE</span>`;
+            }
+        }
+
+        function updateUI() {
+            const data = STATE.data;
+            if (data.length === 0) return;
+
+            // 1. Calculate Current Velocity (Last hour avg)
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+            const recentData = data.filter(d => d.ts > oneHourAgo);
+
+            // Inflow Sum
+            const inflowSum = recentData.reduce((sum, d) => sum + (parseInt(d.inflow) || 0), 0);
+
+            // Outflow Calculation:
+            // Since backend is not storing outflow perfectly yet, we derive it.
+            // Outflow = (LastInbox + LastInflow) - CurrentInbox
+            // We can calculate avg outflow by looking at delta of Inbox vs Inflow over the hour.
+            // DeltaInbox = Inflow - Outflow  =>  Outflow = Inflow - DeltaInbox
+
+            const startInbox = recentData.length > 0 ? recentData[0].inbox : data[data.length - 1].inbox;
+            const endInbox = data[data.length - 1].inbox;
+            const deltaInbox = endInbox - startInbox;
+            const derivedOutflow = inflowSum - deltaInbox;
+
+            // Normalize to hourly rate if we have less than an hour of data
+            // But simplified: sum is good enough if we assume we have approx 12 samples (5 min intervals)
+            // If fewer samples, project it.
+            const coverageFactor = recentData.length > 0 ? (60 / (recentData.length * 5)) : 1;
+
+            const hourlyInflow = Math.round(inflowSum * coverageFactor);
+            // Ensure outflow isn't negative due to sync oddities
+            const hourlyOutflow = Math.max(0, Math.round(derivedOutflow * coverageFactor));
+
+            // Current Stats
+            const current = data[data.length - 1];
+
+            // 2. Render Cards
+            updateMetric('val-inflow', hourlyInflow);
+            updateMetric('val-outflow', hourlyOutflow);
+            updateMetric('val-inbox', current.inbox);
+            document.getElementById('val-unread').textContent = current.unread;
+
+            // Bars Width
+            // Max arbitrary scale: 100 emails/hr?
+            const maxScale = Math.max(100, hourlyInflow, hourlyOutflow);
+            document.getElementById('bar-inflow').style.width = `${Math.min(100, (hourlyInflow / maxScale) * 100)}%`;
+            document.getElementById('bar-outflow').style.width = `${Math.min(100, (hourlyOutflow / maxScale) * 100)}%`;
+
+            // 3. Forecast
+            const netVelocity = hourlyOutflow - hourlyInflow;
+            const forecastEl = document.getElementById('val-forecast');
+            const forecastMsg = document.getElementById('forecast-msg');
+
+            if (netVelocity > 0) {
+                const hoursToZero = current.inbox / netVelocity;
+                forecastEl.textContent = hoursToZero < 1 ? '<1' : Math.round(hoursToZero);
+                forecastEl.className = "text-3xl font-bold text-white neon-green";
+                forecastMsg.textContent = "Hours to Inbox Zero";
+                forecastMsg.className = "text-xs text-gray-500 mt-4";
+            } else {
+                forecastEl.textContent = "INF";
+                forecastEl.className = "text-3xl font-bold text-white text-red-500";
+                forecastMsg.textContent = "Inflow exceeds processing";
+                forecastMsg.className = "text-xs text-red-500 mt-4 animate-pulse";
+            }
+
+            // 4. Render Chart
+            renderChart(data);
+        }
+
+        function updateMetric(id, value) {
+            const el = document.getElementById(id);
+            // Simple animation
+            el.textContent = value;
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('velocityChart').getContext('2d');
+
+            // Downsample for chart if too many points
+            // For now, take last 50 points
+            const chartData = data.slice(-50);
+
+            const labels = chartData.map(d => moment(d.ts).format('HH:mm'));
+            const inflows = chartData.map(d => d.inflow);
+            const inboxes = chartData.map(d => d.inbox);
+
+            if (STATE.chart) {
+                STATE.chart.data.labels = labels;
+                STATE.chart.data.datasets[0].data = inflows;
+                STATE.chart.data.datasets[1].data = inboxes;
+                STATE.chart.update();
+            } else {
+                Chart.defaults.color = '#6b7280';
+                Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+
+                STATE.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Inflow (5m)',
+                                data: inflows,
+                                borderColor: '#bc13fe',
+                                backgroundColor: 'rgba(188, 19, 254, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Total Inbox',
+                                data: inboxes,
+                                borderColor: '#00f3ff',
+                                borderDash: [5, 5],
+                                tension: 0.1,
+                                pointRadius: 0,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: 'Inflow Count' }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+                                title: { display: true, text: 'Inbox Total' }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    boxWidth: 8
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
