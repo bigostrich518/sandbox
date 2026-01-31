@@ -55,29 +55,21 @@ function logEmailStats() {
     // 1. INFLOW: Messages received since the last run
     const inflowQuery = `after:${timeQuery} -from:me`;
     const inflowThreads = GmailApp.search(inflowQuery);
-    const inflowCount = inflowThreads.length; // Approximate, counts threads not messages, but good enough for velocity
+    const inflowCount = inflowThreads.length;
 
-    // 2. OUTFLOW: This is harder to track directly via search unless we use 'processed' labels. 
-    // Proxy: We track the Inbox delta. 
-    // Outflow = Inflow - (CurrentInbox - PreviousInbox)
-    // But to be simple and robust: Let's just track the STATE (Total Inbox) and let the frontend calculate velocity deltas.
-    // Actually, we can count "archived" if we knew what was in inbox.
-    // Let's stick to recording the SNAPSHOT stats. The frontend will calculate velocity = (Current - Previous) / TimeDelta.
+    // 2. EXIT VELOCITY (SENT): Messages sent by me since the last run
+    const sentQuery = `after:${timeQuery} from:me`;
+    const sentThreads = GmailApp.search(sentQuery);
+    const sentCount = sentThreads.length;
 
     // SNAPSHOT METRICS
-    const inboxThreads = GmailApp.getInboxThreads(0, 500); // 500 cap for speed, if >500 just say 500+? No, use search count.
-    // GmailApp.search("label:INBOX") is slow for huge inboxes.
-    // Let's use getInboxUnreadCount() for unread.
+    const inboxThreads = GmailApp.getInboxThreads(0, 500);
     const unreadCount = GmailApp.getInboxUnreadCount();
-
-    // Total in Inbox is hard to get efficiently without API advanced service.
-    // We will assume "Inbox Velocity" is mostly about Unread or actionable items. 
-    // Let's try a broad search for Inbox count, limited to recent if needed, but "label:inbox" is standard.
-    // Note: standard GmailApp has no "getTotalInboxCount".
-    // We will rely on Unread as the primary "Work Remaining" metric, or a search "label:inbox".
     const totalInboxThreads = GmailApp.search("label:inbox").length;
 
-    sheet.appendRow([now, inflowCount, 0, totalInboxThreads, unreadCount]);
+    // STORE: [Timestamp, Inflow, Sent, Inbox Total, Unread Total]
+    // We are replacing the old "Outflow" column (index 2) with "Sent"
+    sheet.appendRow([now, inflowCount, sentCount, totalInboxThreads, unreadCount]);
 
     // Prune old data (keep last 30 days ~ 8640 rows at 5min interval)
     const lastRow = sheet.getLastRow();
@@ -106,6 +98,7 @@ function doGet(e) {
         data: data.map(row => ({
             ts: row[0],
             inflow: row[1],
+            sent: row[2], // Was 'outflow', now 'sent'
             inbox: row[3],
             unread: row[4]
         }))

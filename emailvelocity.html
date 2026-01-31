@@ -165,13 +165,13 @@
                     class="absolute top-0 right-0 w-20 h-20 bg-neon-blue/10 rounded-bl-full -mr-4 -mt-4 transition-all group-hover:bg-neon-blue/20">
                 </div>
                 <div class="flex flex-col h-full justify-between relative z-10">
-                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Processing Rate</div>
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Exit Velocity</div>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-4xl font-bold text-white neon-text" id="val-outflow">--</span>
+                        <span class="text-4xl font-bold text-white neon-text" id="val-sent">--</span>
                         <span class="text-sm text-gray-500">emails/hr</span>
                     </div>
                     <div class="w-full bg-gray-800 h-1 mt-4 rounded-full overflow-hidden">
-                        <div id="bar-outflow" class="h-full bg-neon-blue transition-all duration-1000 w-0"></div>
+                        <div id="bar-sent" class="h-full bg-neon-blue transition-all duration-1000 w-0"></div>
                     </div>
                 </div>
             </div>
@@ -196,13 +196,13 @@
             <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-20 h-20 bg-neon-green/10 rounded-bl-full -mr-4 -mt-4"></div>
                 <div class="flex flex-col h-full justify-between relative z-10">
-                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Time to Zero</div>
+                    <div class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2">Replied Ratio</div>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-3xl font-bold text-white neon-green" id="val-forecast">--</span>
-                        <span class="text-sm text-gray-500">hours</span>
+                        <span class="text-3xl font-bold text-white neon-green" id="val-ratio">--</span>
+                        <span class="text-sm text-gray-500">%</span>
                     </div>
-                    <div class="text-xs text-gray-500 mt-4" id="forecast-msg">
-                        Based on current pace
+                    <div class="text-xs text-gray-500 mt-4" id="ratio-msg">
+                        Sent vs Received
                     </div>
                 </div>
             </div>
@@ -321,77 +321,62 @@
 
             // Inflow Sum
             const inflowSum = recentData.reduce((sum, d) => sum + (parseInt(d.inflow) || 0), 0);
-
-            // Outflow Calculation:
-            // Since backend is not storing outflow perfectly yet, we derive it.
-            // Outflow = (LastInbox + LastInflow) - CurrentInbox
-            // We can calculate avg outflow by looking at delta of Inbox vs Inflow over the hour.
-            // DeltaInbox = Inflow - Outflow  =>  Outflow = Inflow - DeltaInbox
-
-            const startInbox = recentData.length > 0 ? recentData[0].inbox : data[data.length - 1].inbox;
-            const endInbox = data[data.length - 1].inbox;
-            const deltaInbox = endInbox - startInbox;
-            const derivedOutflow = inflowSum - deltaInbox;
+            const sentSum = recentData.reduce((sum, d) => sum + (parseInt(d.sent) || 0), 0); // "Sent" is simpler now
 
             // DYNAMIC DURATION CALCULATION
-            // Instead of assuming 5 min intervals, we calculate the actual time span covered by the data
             let coverageRatio = 1;
             if (recentData.length > 1) {
                 const startTime = recentData[0].ts.getTime();
                 const endTime = recentData[recentData.length - 1].ts.getTime();
                 const durationMinutes = (endTime - startTime) / 1000 / 60;
 
-                // If we have 50 mins of data, we scale up by (60/50) to get hourly rate
-                // We add "1 interval" of buffer roughly to account for the "current" period being full? 
-                // Actually, simplest is: (Count / DurationMinutes) * 60
-                // But avoid divide by zero for single point.
-
                 if (durationMinutes > 5) {
                     coverageRatio = 60 / durationMinutes;
                 }
-            } else if (recentData.length === 1) {
-                // If we only have 1 data point (e.g. hourly cron), assume it covers the interval it represents?
-                // Impossible to know purely from 1 point unless we assume.
-                // If the point inflow is huge (e.g. 50), it's likely hourly. If small (2), likely 5-min.
-                // Safer: Just show the raw sum for now if it's the only data point.
-                coverageRatio = 1;
             }
 
             const hourlyInflow = Math.round(inflowSum * coverageRatio);
-            // Ensure outflow isn't negative due to sync oddities
-            const hourlyOutflow = Math.max(0, Math.round(derivedOutflow * coverageRatio));
+            const hourlySent = Math.round(sentSum * coverageRatio);
 
             // Current Stats
             const current = data[data.length - 1];
 
             // 2. Render Cards
             updateMetric('val-inflow', hourlyInflow);
-            updateMetric('val-outflow', hourlyOutflow);
+            updateMetric('val-sent', hourlySent);
             updateMetric('val-inbox', current.inbox);
             document.getElementById('val-unread').textContent = current.unread;
 
             // Bars Width
-            // Max arbitrary scale: 100 emails/hr?
-            const maxScale = Math.max(100, hourlyInflow, hourlyOutflow);
+            const maxScale = Math.max(50, hourlyInflow, hourlySent); // Scale to max activity
             document.getElementById('bar-inflow').style.width = `${Math.min(100, (hourlyInflow / maxScale) * 100)}%`;
-            document.getElementById('bar-outflow').style.width = `${Math.min(100, (hourlyOutflow / maxScale) * 100)}%`;
+            document.getElementById('bar-sent').style.width = `${Math.min(100, (hourlySent / maxScale) * 100)}%`;
 
-            // 3. Forecast
-            const netVelocity = hourlyOutflow - hourlyInflow;
-            const forecastEl = document.getElementById('val-forecast');
-            const forecastMsg = document.getElementById('forecast-msg');
+            // 3. Ratio / Forecast
+            // With Sent vs Received, "Inbox Zero" forecast makes less sense.
+            // Let's show "Response Ratio" instead? Or just "Net Flow"?
+            // If Sent > Inflow, you are productive.
 
-            if (netVelocity > 0) {
-                const hoursToZero = current.inbox / netVelocity;
-                forecastEl.textContent = hoursToZero < 1 ? '<1' : Math.round(hoursToZero);
-                forecastEl.className = "text-3xl font-bold text-white neon-green";
-                forecastMsg.textContent = "Hours to Inbox Zero";
-                forecastMsg.className = "text-xs text-gray-500 mt-4";
+            const ratioEl = document.getElementById('val-ratio');
+            const ratioMsg = document.getElementById('ratio-msg');
+
+            if (hourlyInflow > 0) {
+                const ratio = Math.round((hourlySent / hourlyInflow) * 100);
+                ratioEl.textContent = `${ratio}%`;
+
+                if (ratio >= 100) {
+                    ratioEl.className = "text-3xl font-bold text-white neon-green";
+                    ratioMsg.textContent = "Productive: Sending more than receiving";
+                } else if (ratio >= 50) {
+                    ratioEl.className = "text-3xl font-bold text-white neon-blue";
+                    ratioMsg.textContent = "Balanced: Keeping up";
+                } else {
+                    ratioEl.className = "text-3xl font-bold text-white text-red-500";
+                    ratioMsg.textContent = "Falling Behind";
+                }
             } else {
-                forecastEl.textContent = "INF";
-                forecastEl.className = "text-3xl font-bold text-white text-red-500";
-                forecastMsg.textContent = "Inflow exceeds processing";
-                forecastMsg.className = "text-xs text-red-500 mt-4 animate-pulse";
+                ratioEl.textContent = "--";
+                ratioMsg.textContent = "No incoming mail yet";
             }
 
             // 4. Render Chart
@@ -412,13 +397,13 @@
             const chartData = data.slice(-50);
 
             const labels = chartData.map(d => moment(d.ts).format('HH:mm'));
-            const inflows = chartData.map(d => d.inflow);
-            const inboxes = chartData.map(d => d.inbox);
+            const inflows = chartData.map(d => d.inflow || 0);
+            const sents = chartData.map(d => d.sent || 0); // New 'sent' data
 
             if (STATE.chart) {
                 STATE.chart.data.labels = labels;
                 STATE.chart.data.datasets[0].data = inflows;
-                STATE.chart.data.datasets[1].data = inboxes;
+                STATE.chart.data.datasets[1].data = sents;
                 STATE.chart.update();
             } else {
                 Chart.defaults.color = '#6b7280';
@@ -430,7 +415,7 @@
                         labels: labels,
                         datasets: [
                             {
-                                label: 'Inflow (5m)',
+                                label: 'Inflow',
                                 data: inflows,
                                 borderColor: '#bc13fe',
                                 backgroundColor: 'rgba(188, 19, 254, 0.1)',
@@ -439,13 +424,13 @@
                                 yAxisID: 'y'
                             },
                             {
-                                label: 'Total Inbox',
-                                data: inboxes,
-                                borderColor: '#00f3ff',
-                                borderDash: [5, 5],
-                                tension: 0.1,
-                                pointRadius: 0,
-                                yAxisID: 'y1'
+                                label: 'Sent',
+                                data: sents,
+                                borderColor: '#00f3ff', // Blue for Sent/Exit
+                                backgroundColor: 'rgba(0, 243, 255, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y'
                             }
                         ]
                     },
@@ -461,16 +446,7 @@
                                 type: 'linear',
                                 display: true,
                                 position: 'left',
-                                title: { display: true, text: 'Inflow Count' }
-                            },
-                            y1: {
-                                type: 'linear',
-                                display: true,
-                                position: 'right',
-                                grid: {
-                                    drawOnChartArea: false,
-                                },
-                                title: { display: true, text: 'Inbox Total' }
+                                title: { display: true, text: 'Emails Count' }
                             },
                             x: {
                                 grid: {
