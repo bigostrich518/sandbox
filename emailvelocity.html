@@ -273,17 +273,27 @@
         };
 
         // --- INIT ---
-        window.onload = function () {
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Initializing Email Velocity Dashboard...");
+
             // Try to load from storage on load
-            STATE.url = localStorage.getItem(CONFIG.storageKeyUrl);
-            STATE.key = localStorage.getItem(CONFIG.storageKeyKey);
+            const storedUrl = localStorage.getItem(CONFIG.storageKeyUrl);
+            const storedKey = localStorage.getItem(CONFIG.storageKeyKey);
+
+            console.log("Loaded from storage:", { url: storedUrl ? 'FOUND' : 'MISSING', key: storedKey ? 'FOUND' : 'MISSING' });
+
+            if (storedUrl) STATE.url = storedUrl;
+            if (storedKey) STATE.key = storedKey;
 
             if (!STATE.url || !STATE.key) {
+                console.log("Credentials missing, showing config modal.");
                 document.getElementById('config-modal').classList.remove('hidden');
             } else {
+                console.log("Credentials found, starting dashboard.");
                 initDashboard();
             }
-        };
+        });
 
         function saveConfig() {
             const url = document.getElementById('api-url-input').value.trim();
