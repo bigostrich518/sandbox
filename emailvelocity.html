@@ -215,14 +215,12 @@
             <div
                 class="glass-panel p-4 rounded-xl flex flex-col justify-center items-center group hover:bg-white/5 transition-colors">
                 <div class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">24 Hour Avg</div>
-                <div class="text-xl font-bold text-white"><span id="stat-24h" class="text-neon-blue">--</span> <span
-                        class="text-xs text-gray-600 font-normal">/hr</span></div>
+                <div class="text-xl font-bold text-white"><span id="stat-24h" class="text-neon-blue">--</span></div>
             </div>
             <div
                 class="glass-panel p-4 rounded-xl flex flex-col justify-center items-center group hover:bg-white/5 transition-colors">
                 <div class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">7 Day Avg</div>
-                <div class="text-xl font-bold text-white"><span id="stat-7d" class="text-neon-purple">--</span> <span
-                        class="text-xs text-gray-600 font-normal">/hr</span></div>
+                <div class="text-xl font-bold text-white"><span id="stat-7d" class="text-neon-purple">--</span></div>
             </div>
             <div
                 class="glass-panel p-4 rounded-xl flex flex-col justify-center items-center group hover:bg-white/5 transition-colors">
@@ -351,16 +349,19 @@
             const inflowSum = recentData.reduce((sum, d) => sum + (parseInt(d.inflow) || 0), 0);
             const sentSum = recentData.reduce((sum, d) => sum + (parseInt(d.sent) || 0), 0); // "Sent" is simpler now
 
-            // DYNAMIC DURATION CALCULATION
+            // DYNAMIC DURATION CALCULATION (Real-Time Decay)
+            // Instead of just (LastTimestamp - FirstTimestamp), we use (NOW - FirstTimestamp)
+            // This ensures that if no new email comes in, the "Rate per Hour" slowly drops.
             let coverageRatio = 1;
-            if (recentData.length > 1) {
+            if (recentData.length > 0) {
                 const startTime = recentData[0].ts.getTime();
-                const endTime = recentData[recentData.length - 1].ts.getTime();
-                const durationMinutes = (endTime - startTime) / 1000 / 60;
+                const nowTime = new Date().getTime(); // Use NOW for decay
+                // Ensure we don't divide by zero or negative if system clocks are weird
+                const durationMinutes = Math.max(1, (nowTime - startTime) / 1000 / 60);
 
-                if (durationMinutes > 5) {
-                    coverageRatio = 60 / durationMinutes;
-                }
+                // If we have very little data (e.g. just started), prevent ratio explosion
+                // But generally, we scale to match hourly rate.
+                coverageRatio = 60 / durationMinutes;
             }
 
             const hourlyInflow = Math.round(inflowSum * coverageRatio);
@@ -427,14 +428,35 @@
             const rate24h = getRate(data24h);
             const rate7d = getRate(data7d);
 
-            // Peak Stats (Max value seen in any single interval)
-            const maxInflow = Math.max(...data.map(d => parseInt(d.inflow) || 0));
-            const maxSent = Math.max(...data.map(d => parseInt(d.sent) || 0));
+            // Helper for Peak Rate (True Velocity)
+            // Finds the interval with the highest density of emails
+            function getPeakRate(subset, isSent) {
+                let maxRate = 0;
+                for (let i = 1; i < subset.length; i++) {
+                    const prev = subset[i - 1];
+                    const curr = subset[i];
+                    const deltaMinutes = (curr.ts - prev.ts) / 1000 / 60;
+                    if (deltaMinutes < 1) continue; // Ignore impossibly fast duplicates
 
+                    const count = isSent ? (parseInt(curr.sent) || 0) : (parseInt(curr.inflow) || 0);
+                    // Normalize to hourly rate for this specific interval
+                    const intervalRate = (count / deltaMinutes) * 60;
+                    if (intervalRate > maxRate) maxRate = intervalRate;
+                }
+                return Math.round(maxRate);
+            }
+
+            const maxInflowRate = getPeakRate(data, false);
+            const maxSentRate = getPeakRate(data, true);
+
+            // Removed redundant "/hr" since it's already in the parent span in some designs, 
+            // or we just ensure we don't double add it.
+            // Based on HTML <span class="text-xs... " >/hr</span>, we should just inject the number.
             document.getElementById('stat-24h').innerHTML = `${rate24h} <span class="text-xs text-gray-600 font-normal">/hr</span>`;
             document.getElementById('stat-7d').innerHTML = `${rate7d} <span class="text-xs text-gray-600 font-normal">/hr</span>`;
-            document.getElementById('stat-peak-in').textContent = maxInflow;
-            document.getElementById('stat-peak-out').textContent = maxSent;
+            // Add /hr for peaks too so they match context
+            document.getElementById('stat-peak-in').innerHTML = `${maxInflowRate} <span class="text-xs text-gray-600 font-normal">/hr</span>`;
+            document.getElementById('stat-peak-out').innerHTML = `${maxSentRate} <span class="text-xs text-gray-600 font-normal">/hr</span>`;
         }
 
         function updateMetric(id, value) {
