@@ -83,9 +83,11 @@ function doGet(e) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName(SHEET_NAME);
 
-    // Return last 1000 rows (approx 3-4 days of data at 5min interval)
+    // Return last 5000 rows 
+    // @ 5min interval = ~17 days
+    // @ 1hr interval = ~200 days (6 months)
     const lastRow = sheet.getLastRow();
-    const startRow = Math.max(2, lastRow - 1000);
+    const startRow = Math.max(2, lastRow - 5000);
     const numRows = lastRow - startRow + 1;
 
     let data = [];
