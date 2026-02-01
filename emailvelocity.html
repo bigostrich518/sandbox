@@ -273,7 +273,7 @@
         };
 
         // --- INIT ---
-        // --- INIT ---
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Initializing Email Velocity Dashboard...");
 
@@ -291,6 +291,7 @@
                 document.getElementById('config-modal').classList.remove('hidden');
             } else {
                 console.log("Credentials found, starting dashboard.");
+                document.getElementById('config-modal').classList.add('hidden');
                 initDashboard();
             }
         });
