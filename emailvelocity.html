@@ -265,15 +265,19 @@
             pollInterval: 60000
         };
 
-        const STATE = {
-            url: localStorage.getItem(CONFIG.storageKeyUrl),
-            key: localStorage.getItem(CONFIG.storageKeyKey),
+        let STATE = {
+            url: '',
+            key: '',
             data: [],
             chart: null
         };
 
         // --- INIT ---
         window.onload = function () {
+            // Try to load from storage on load
+            STATE.url = localStorage.getItem(CONFIG.storageKeyUrl);
+            STATE.key = localStorage.getItem(CONFIG.storageKeyKey);
+
             if (!STATE.url || !STATE.key) {
                 document.getElementById('config-modal').classList.remove('hidden');
             } else {
@@ -291,6 +295,7 @@
                 STATE.url = url;
                 STATE.key = key;
                 document.getElementById('config-modal').classList.add('hidden');
+                alert('Configuration Saved!'); // Feedback for user
                 initDashboard();
             }
         }
