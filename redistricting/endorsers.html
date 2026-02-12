@@ -17,38 +17,52 @@
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .quote-card {
-            background-color: #f9f9f9;
-            padding: 2rem;
-            border-left: 5px solid var(--accent-color);
-            margin-bottom: 2rem;
-            font-size: 1.25rem;
+            background-color: var(--primary-light);
+            padding: 2.5rem;
+            border-left: 4px solid var(--accent-color);
+            margin-bottom: 0;
+            /* Handled by grid gap */
+            font-size: 1.1rem;
             font-style: italic;
+            transition: var(--transition);
+        }
+
+        .quote-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
         .quote-author {
-            margin-top: 1rem;
-            font-weight: 700;
+            margin-top: 1.5rem;
             font-style: normal;
-            font-size: 1rem;
-            color: var(--primary-color);
         }
 
         .logo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
             margin-top: 2rem;
         }
 
         .logo-placeholder {
-            background-color: #eee;
-            height: 120px;
+            background-color: var(--primary-light);
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #999;
-            font-weight: bold;
-            border-radius: 8px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .logo-placeholder:hover {
+            border-color: var(--accent-color);
+            color: var(--white);
+            background-color: rgba(255, 255, 255, 0.08);
         }
     </style>
 </head>
@@ -72,24 +86,73 @@
     </header>
 
     <div class="container section-padding">
-        <h1 class="section-title">Trusted Voices for a Fair Virginia</h1>
+        <h1 class="section-title">Trusted Voices for a <strong>Fair Virginia</strong></h1>
 
-        <div class="quote-card">
-            "This vote is about ensuring the 2026 elections reflect the true will of the people."
-            <div class="quote-author">— Speaker Don Scott</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="quote-card"
+                style="border-radius: var(--border-radius); background: var(--primary-light); box-shadow: var(--shadow-md);">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--text-color);">
+                    "This vote is about ensuring the 2026 elections reflect the true will of the people. Voters should
+                    pick their politicians, not the other way around."
+                </p>
+                <div class="quote-author">
+                    <div style="font-size: 1.1rem; color: var(--white);">Speaker Don Scott</div>
+                    <div style="font-size: 0.9rem; font-weight: 400; color: var(--accent-color); margin-top: 0.25rem;">
+                        Virginia House of Delegates</div>
+                </div>
+            </div>
+
+            <div class="quote-card"
+                style="border-radius: var(--border-radius); background: var(--primary-light); box-shadow: var(--shadow-md);">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--text-color);">
+                    "Fair maps are the foundation of a healthy democracy. April 21 is our chance to fix the broken
+                    system once and for all."
+                </p>
+                <div class="quote-author">
+                    <div style="font-size: 1.1rem; color: var(--white);">Gov. Abigail Spanberger</div>
+                    <div style="font-size: 0.9rem; font-weight: 400; color: var(--accent-color); margin-top: 0.25rem;">
+                        Governor of Virginia</div>
+                </div>
+            </div>
+            <div class="quote-card"
+                style="border-radius: var(--border-radius); background: var(--primary-light); box-shadow: var(--shadow-md);">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--text-color);">
+                    "This amendment ensures that every community—regardless of zip code—has a voice in Richmond."
+                </p>
+                <div class="quote-author">
+                    <div style="font-size: 1.1rem; color: var(--white);">Rep. Jennifer McClellan</div>
+                    <div style="font-size: 0.9rem; font-weight: 400; color: var(--accent-color); margin-top: 0.25rem;">
+                        U.S. Congress (VA-04)</div>
+                </div>
+            </div>
         </div>
 
-        <div class="quote-card">
-            "Fair maps are the foundation of a healthy democracy. April 21 is our chance to get it right."
-            <div class="quote-author">— Gov. Abigail Spanberger</div>
-        </div>
-
-        <h2 class="section-title" style="margin-top: 4rem;">Our Supporters</h2>
+        <h2 class="section-title" style="margin-top: 5rem;">Our <strong>Coalition</strong></h2>
         <div class="logo-grid">
-            <div class="logo-placeholder">Voting Rights Orgs</div>
-            <div class="logo-placeholder">Local Civic Leagues</div>
-            <div class="logo-placeholder">Chamber of Commerce</div>
-            <div class="logo-placeholder">Faith Leaders Alliance</div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">NAACP Virginia
+            </div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">League of Women
+                Voters</div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">Virginia Chamber
+            </div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">AFL-CIO Virginia
+            </div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">Sierra Club VA
+            </div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">VA Civic
+                Engagement Table</div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">Casa In Action
+            </div>
+            <div class="logo-placeholder"
+                style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 600;">Richmond
+                Times-Dispatch</div>
         </div>
     </div>
 
