@@ -1,0 +1,767 @@
+{
+  "regions": {
+    "East": {
+      "id": "east",
+      "name": "East",
+      "rounds": {
+        "round1": [
+          {
+            "id": "e1",
+            "nextGameId": "e9",
+            "team1": {
+              "id": "e_t1",
+              "name": "East Team 1",
+              "seed": 1
+            },
+            "team2": {
+              "id": "e_t16",
+              "name": "East Team 16",
+              "seed": 16
+            },
+            "winner": null
+          },
+          {
+            "id": "e2",
+            "nextGameId": "e9",
+            "team1": {
+              "id": "e_t8",
+              "name": "East Team 8",
+              "seed": 8
+            },
+            "team2": {
+              "id": "e_t9",
+              "name": "East Team 9",
+              "seed": 9
+            },
+            "winner": null
+          },
+          {
+            "id": "e3",
+            "nextGameId": "e10",
+            "team1": {
+              "id": "e_t5",
+              "name": "East Team 5",
+              "seed": 5
+            },
+            "team2": {
+              "id": "e_t12",
+              "name": "East Team 12",
+              "seed": 12
+            },
+            "winner": null
+          },
+          {
+            "id": "e4",
+            "nextGameId": "e10",
+            "team1": {
+              "id": "e_t4",
+              "name": "East Team 4",
+              "seed": 4
+            },
+            "team2": {
+              "id": "e_t13",
+              "name": "East Team 13",
+              "seed": 13
+            },
+            "winner": null
+          },
+          {
+            "id": "e5",
+            "nextGameId": "e11",
+            "team1": {
+              "id": "e_t6",
+              "name": "East Team 6",
+              "seed": 6
+            },
+            "team2": {
+              "id": "e_t11",
+              "name": "East Team 11",
+              "seed": 11
+            },
+            "winner": null
+          },
+          {
+            "id": "e6",
+            "nextGameId": "e11",
+            "team1": {
+              "id": "e_t3",
+              "name": "East Team 3",
+              "seed": 3
+            },
+            "team2": {
+              "id": "e_t14",
+              "name": "East Team 14",
+              "seed": 14
+            },
+            "winner": null
+          },
+          {
+            "id": "e7",
+            "nextGameId": "e12",
+            "team1": {
+              "id": "e_t7",
+              "name": "East Team 7",
+              "seed": 7
+            },
+            "team2": {
+              "id": "e_t10",
+              "name": "East Team 10",
+              "seed": 10
+            },
+            "winner": null
+          },
+          {
+            "id": "e8",
+            "nextGameId": "e12",
+            "team1": {
+              "id": "e_t2",
+              "name": "East Team 2",
+              "seed": 2
+            },
+            "team2": {
+              "id": "e_t15",
+              "name": "East Team 15",
+              "seed": 15
+            },
+            "winner": null
+          }
+        ],
+        "round2": [
+          {
+            "id": "e9",
+            "nextGameId": "e13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "e10",
+            "nextGameId": "e13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "e11",
+            "nextGameId": "e14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "e12",
+            "nextGameId": "e14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round3": [
+          {
+            "id": "e13",
+            "nextGameId": "e15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "e14",
+            "nextGameId": "e15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round4": [
+          {
+            "id": "e15",
+            "nextGameId": "ff_e",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ]
+      }
+    },
+    "West": {
+      "id": "west",
+      "name": "West",
+      "rounds": {
+        "round1": [
+          {
+            "id": "w1",
+            "nextGameId": "w9",
+            "team1": {
+              "id": "w_t1",
+              "name": "West Team 1",
+              "seed": 1
+            },
+            "team2": {
+              "id": "w_t16",
+              "name": "West Team 16",
+              "seed": 16
+            },
+            "winner": null
+          },
+          {
+            "id": "w2",
+            "nextGameId": "w9",
+            "team1": {
+              "id": "w_t8",
+              "name": "West Team 8",
+              "seed": 8
+            },
+            "team2": {
+              "id": "w_t9",
+              "name": "West Team 9",
+              "seed": 9
+            },
+            "winner": null
+          },
+          {
+            "id": "w3",
+            "nextGameId": "w10",
+            "team1": {
+              "id": "w_t5",
+              "name": "West Team 5",
+              "seed": 5
+            },
+            "team2": {
+              "id": "w_t12",
+              "name": "West Team 12",
+              "seed": 12
+            },
+            "winner": null
+          },
+          {
+            "id": "w4",
+            "nextGameId": "w10",
+            "team1": {
+              "id": "w_t4",
+              "name": "West Team 4",
+              "seed": 4
+            },
+            "team2": {
+              "id": "w_t13",
+              "name": "West Team 13",
+              "seed": 13
+            },
+            "winner": null
+          },
+          {
+            "id": "w5",
+            "nextGameId": "w11",
+            "team1": {
+              "id": "w_t6",
+              "name": "West Team 6",
+              "seed": 6
+            },
+            "team2": {
+              "id": "w_t11",
+              "name": "West Team 11",
+              "seed": 11
+            },
+            "winner": null
+          },
+          {
+            "id": "w6",
+            "nextGameId": "w11",
+            "team1": {
+              "id": "w_t3",
+              "name": "West Team 3",
+              "seed": 3
+            },
+            "team2": {
+              "id": "w_t14",
+              "name": "West Team 14",
+              "seed": 14
+            },
+            "winner": null
+          },
+          {
+            "id": "w7",
+            "nextGameId": "w12",
+            "team1": {
+              "id": "w_t7",
+              "name": "West Team 7",
+              "seed": 7
+            },
+            "team2": {
+              "id": "w_t10",
+              "name": "West Team 10",
+              "seed": 10
+            },
+            "winner": null
+          },
+          {
+            "id": "w8",
+            "nextGameId": "w12",
+            "team1": {
+              "id": "w_t2",
+              "name": "West Team 2",
+              "seed": 2
+            },
+            "team2": {
+              "id": "w_t15",
+              "name": "West Team 15",
+              "seed": 15
+            },
+            "winner": null
+          }
+        ],
+        "round2": [
+          {
+            "id": "w9",
+            "nextGameId": "w13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "w10",
+            "nextGameId": "w13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "w11",
+            "nextGameId": "w14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "w12",
+            "nextGameId": "w14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round3": [
+          {
+            "id": "w13",
+            "nextGameId": "w15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "w14",
+            "nextGameId": "w15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round4": [
+          {
+            "id": "w15",
+            "nextGameId": "ff_w",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ]
+      }
+    },
+    "South": {
+      "id": "south",
+      "name": "South",
+      "rounds": {
+        "round1": [
+          {
+            "id": "s1",
+            "nextGameId": "s9",
+            "team1": {
+              "id": "s_t1",
+              "name": "South Team 1",
+              "seed": 1
+            },
+            "team2": {
+              "id": "s_t16",
+              "name": "South Team 16",
+              "seed": 16
+            },
+            "winner": null
+          },
+          {
+            "id": "s2",
+            "nextGameId": "s9",
+            "team1": {
+              "id": "s_t8",
+              "name": "South Team 8",
+              "seed": 8
+            },
+            "team2": {
+              "id": "s_t9",
+              "name": "South Team 9",
+              "seed": 9
+            },
+            "winner": null
+          },
+          {
+            "id": "s3",
+            "nextGameId": "s10",
+            "team1": {
+              "id": "s_t5",
+              "name": "South Team 5",
+              "seed": 5
+            },
+            "team2": {
+              "id": "s_t12",
+              "name": "South Team 12",
+              "seed": 12
+            },
+            "winner": null
+          },
+          {
+            "id": "s4",
+            "nextGameId": "s10",
+            "team1": {
+              "id": "s_t4",
+              "name": "South Team 4",
+              "seed": 4
+            },
+            "team2": {
+              "id": "s_t13",
+              "name": "South Team 13",
+              "seed": 13
+            },
+            "winner": null
+          },
+          {
+            "id": "s5",
+            "nextGameId": "s11",
+            "team1": {
+              "id": "s_t6",
+              "name": "South Team 6",
+              "seed": 6
+            },
+            "team2": {
+              "id": "s_t11",
+              "name": "South Team 11",
+              "seed": 11
+            },
+            "winner": null
+          },
+          {
+            "id": "s6",
+            "nextGameId": "s11",
+            "team1": {
+              "id": "s_t3",
+              "name": "South Team 3",
+              "seed": 3
+            },
+            "team2": {
+              "id": "s_t14",
+              "name": "South Team 14",
+              "seed": 14
+            },
+            "winner": null
+          },
+          {
+            "id": "s7",
+            "nextGameId": "s12",
+            "team1": {
+              "id": "s_t7",
+              "name": "South Team 7",
+              "seed": 7
+            },
+            "team2": {
+              "id": "s_t10",
+              "name": "South Team 10",
+              "seed": 10
+            },
+            "winner": null
+          },
+          {
+            "id": "s8",
+            "nextGameId": "s12",
+            "team1": {
+              "id": "s_t2",
+              "name": "South Team 2",
+              "seed": 2
+            },
+            "team2": {
+              "id": "s_t15",
+              "name": "South Team 15",
+              "seed": 15
+            },
+            "winner": null
+          }
+        ],
+        "round2": [
+          {
+            "id": "s9",
+            "nextGameId": "s13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "s10",
+            "nextGameId": "s13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "s11",
+            "nextGameId": "s14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "s12",
+            "nextGameId": "s14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round3": [
+          {
+            "id": "s13",
+            "nextGameId": "s15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "s14",
+            "nextGameId": "s15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round4": [
+          {
+            "id": "s15",
+            "nextGameId": "ff_s",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ]
+      }
+    },
+    "Midwest": {
+      "id": "midwest",
+      "name": "Midwest",
+      "rounds": {
+        "round1": [
+          {
+            "id": "m1",
+            "nextGameId": "m9",
+            "team1": {
+              "id": "m_t1",
+              "name": "Midwest Team 1",
+              "seed": 1
+            },
+            "team2": {
+              "id": "m_t16",
+              "name": "Midwest Team 16",
+              "seed": 16
+            },
+            "winner": null
+          },
+          {
+            "id": "m2",
+            "nextGameId": "m9",
+            "team1": {
+              "id": "m_t8",
+              "name": "Midwest Team 8",
+              "seed": 8
+            },
+            "team2": {
+              "id": "m_t9",
+              "name": "Midwest Team 9",
+              "seed": 9
+            },
+            "winner": null
+          },
+          {
+            "id": "m3",
+            "nextGameId": "m10",
+            "team1": {
+              "id": "m_t5",
+              "name": "Midwest Team 5",
+              "seed": 5
+            },
+            "team2": {
+              "id": "m_t12",
+              "name": "Midwest Team 12",
+              "seed": 12
+            },
+            "winner": null
+          },
+          {
+            "id": "m4",
+            "nextGameId": "m10",
+            "team1": {
+              "id": "m_t4",
+              "name": "Midwest Team 4",
+              "seed": 4
+            },
+            "team2": {
+              "id": "m_t13",
+              "name": "Midwest Team 13",
+              "seed": 13
+            },
+            "winner": null
+          },
+          {
+            "id": "m5",
+            "nextGameId": "m11",
+            "team1": {
+              "id": "m_t6",
+              "name": "Midwest Team 6",
+              "seed": 6
+            },
+            "team2": {
+              "id": "m_t11",
+              "name": "Midwest Team 11",
+              "seed": 11
+            },
+            "winner": null
+          },
+          {
+            "id": "m6",
+            "nextGameId": "m11",
+            "team1": {
+              "id": "m_t3",
+              "name": "Midwest Team 3",
+              "seed": 3
+            },
+            "team2": {
+              "id": "m_t14",
+              "name": "Midwest Team 14",
+              "seed": 14
+            },
+            "winner": null
+          },
+          {
+            "id": "m7",
+            "nextGameId": "m12",
+            "team1": {
+              "id": "m_t7",
+              "name": "Midwest Team 7",
+              "seed": 7
+            },
+            "team2": {
+              "id": "m_t10",
+              "name": "Midwest Team 10",
+              "seed": 10
+            },
+            "winner": null
+          },
+          {
+            "id": "m8",
+            "nextGameId": "m12",
+            "team1": {
+              "id": "m_t2",
+              "name": "Midwest Team 2",
+              "seed": 2
+            },
+            "team2": {
+              "id": "m_t15",
+              "name": "Midwest Team 15",
+              "seed": 15
+            },
+            "winner": null
+          }
+        ],
+        "round2": [
+          {
+            "id": "m9",
+            "nextGameId": "m13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "m10",
+            "nextGameId": "m13",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "m11",
+            "nextGameId": "m14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "m12",
+            "nextGameId": "m14",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round3": [
+          {
+            "id": "m13",
+            "nextGameId": "m15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          },
+          {
+            "id": "m14",
+            "nextGameId": "m15",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ],
+        "round4": [
+          {
+            "id": "m15",
+            "nextGameId": "ff_m",
+            "team1": null,
+            "team2": null,
+            "winner": null
+          }
+        ]
+      }
+    }
+  },
+  "finalFour": {
+    "id": "finalfour",
+    "name": "Final Four",
+    "rounds": {
+      "round5": [
+        {
+          "id": "ff_1",
+          "nextGameId": "ff_3",
+          "team1": null,
+          "team2": null,
+          "winner": null
+        },
+        {
+          "id": "ff_2",
+          "nextGameId": "ff_3",
+          "team1": null,
+          "team2": null,
+          "winner": null
+        }
+      ],
+      "round6": [
+        {
+          "id": "ff_3",
+          "nextGameId": null,
+          "team1": null,
+          "team2": null,
+          "winner": null
+        }
+      ]
+    }
+  }
+}

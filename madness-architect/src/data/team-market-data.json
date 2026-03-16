@@ -1,0 +1,898 @@
+{
+  "e_t1": {
+    "stats": {
+      "ppg": 82.0,
+      "rpg": 30.5,
+      "ast": 16.3,
+      "fgPct": "45.0%",
+      "threePct": "35.5%"
+    },
+    "predictions": {
+      "polymarket": "45%",
+      "kalshi": "46%",
+      "line": "+7.3"
+    }
+  },
+  "e_t2": {
+    "stats": {
+      "ppg": 70.5,
+      "rpg": 39.4,
+      "ast": 13.0,
+      "fgPct": "42.2%",
+      "threePct": "37.8%"
+    },
+    "predictions": {
+      "polymarket": "84%",
+      "kalshi": "87%",
+      "line": "+7.0"
+    }
+  },
+  "e_t3": {
+    "stats": {
+      "ppg": 72.9,
+      "rpg": 36.4,
+      "ast": 14.0,
+      "fgPct": "42.9%",
+      "threePct": "37.7%"
+    },
+    "predictions": {
+      "polymarket": "75%",
+      "kalshi": "72%",
+      "line": "-12.9"
+    }
+  },
+  "e_t4": {
+    "stats": {
+      "ppg": 76.4,
+      "rpg": 37.9,
+      "ast": 12.4,
+      "fgPct": "47.7%",
+      "threePct": "34.6%"
+    },
+    "predictions": {
+      "polymarket": "37%",
+      "kalshi": "33%",
+      "line": "-4.9"
+    }
+  },
+  "e_t5": {
+    "stats": {
+      "ppg": 77.6,
+      "rpg": 36.4,
+      "ast": 14.5,
+      "fgPct": "45.3%",
+      "threePct": "34.6%"
+    },
+    "predictions": {
+      "polymarket": "70%",
+      "kalshi": "72%",
+      "line": "+8.9"
+    }
+  },
+  "e_t6": {
+    "stats": {
+      "ppg": 83.0,
+      "rpg": 30.7,
+      "ast": 14.1,
+      "fgPct": "47.9%",
+      "threePct": "36.0%"
+    },
+    "predictions": {
+      "polymarket": "60%",
+      "kalshi": "65%",
+      "line": "-13.3"
+    }
+  },
+  "e_t7": {
+    "stats": {
+      "ppg": 74.0,
+      "rpg": 35.8,
+      "ast": 15.4,
+      "fgPct": "42.6%",
+      "threePct": "34.7%"
+    },
+    "predictions": {
+      "polymarket": "13%",
+      "kalshi": "9%",
+      "line": "+8.8"
+    }
+  },
+  "e_t8": {
+    "stats": {
+      "ppg": 84.1,
+      "rpg": 39.7,
+      "ast": 12.0,
+      "fgPct": "43.5%",
+      "threePct": "33.0%"
+    },
+    "predictions": {
+      "polymarket": "25%",
+      "kalshi": "21%",
+      "line": "-13.3"
+    }
+  },
+  "e_t9": {
+    "stats": {
+      "ppg": 74.0,
+      "rpg": 33.7,
+      "ast": 17.6,
+      "fgPct": "46.8%",
+      "threePct": "33.4%"
+    },
+    "predictions": {
+      "polymarket": "89%",
+      "kalshi": "88%",
+      "line": "-5.9"
+    }
+  },
+  "e_t10": {
+    "stats": {
+      "ppg": 70.4,
+      "rpg": 32.9,
+      "ast": 14.3,
+      "fgPct": "44.5%",
+      "threePct": "35.7%"
+    },
+    "predictions": {
+      "polymarket": "39%",
+      "kalshi": "43%",
+      "line": "+8.3"
+    }
+  },
+  "e_t11": {
+    "stats": {
+      "ppg": 74.3,
+      "rpg": 37.8,
+      "ast": 14.6,
+      "fgPct": "42.2%",
+      "threePct": "37.7%"
+    },
+    "predictions": {
+      "polymarket": "76%",
+      "kalshi": "74%",
+      "line": "-10.8"
+    }
+  },
+  "e_t12": {
+    "stats": {
+      "ppg": 71.4,
+      "rpg": 30.7,
+      "ast": 12.4,
+      "fgPct": "44.6%",
+      "threePct": "34.4%"
+    },
+    "predictions": {
+      "polymarket": "51%",
+      "kalshi": "54%",
+      "line": "+9.9"
+    }
+  },
+  "e_t13": {
+    "stats": {
+      "ppg": 79.0,
+      "rpg": 37.3,
+      "ast": 17.3,
+      "fgPct": "44.4%",
+      "threePct": "37.5%"
+    },
+    "predictions": {
+      "polymarket": "50%",
+      "kalshi": "51%",
+      "line": "-4.9"
+    }
+  },
+  "e_t14": {
+    "stats": {
+      "ppg": 84.1,
+      "rpg": 30.7,
+      "ast": 15.3,
+      "fgPct": "43.7%",
+      "threePct": "37.4%"
+    },
+    "predictions": {
+      "polymarket": "33%",
+      "kalshi": "30%",
+      "line": "-7.3"
+    }
+  },
+  "e_t15": {
+    "stats": {
+      "ppg": 84.5,
+      "rpg": 38.3,
+      "ast": 13.0,
+      "fgPct": "44.6%",
+      "threePct": "35.3%"
+    },
+    "predictions": {
+      "polymarket": "70%",
+      "kalshi": "65%",
+      "line": "+5.6"
+    }
+  },
+  "e_t16": {
+    "stats": {
+      "ppg": 75.6,
+      "rpg": 35.6,
+      "ast": 15.7,
+      "fgPct": "47.5%",
+      "threePct": "34.5%"
+    },
+    "predictions": {
+      "polymarket": "56%",
+      "kalshi": "54%",
+      "line": "+4.0"
+    }
+  },
+  "w_t1": {
+    "stats": {
+      "ppg": 82.7,
+      "rpg": 33.7,
+      "ast": 17.0,
+      "fgPct": "46.9%",
+      "threePct": "35.5%"
+    },
+    "predictions": {
+      "polymarket": "83%",
+      "kalshi": "87%",
+      "line": "-11.4"
+    }
+  },
+  "w_t2": {
+    "stats": {
+      "ppg": 80.4,
+      "rpg": 38.6,
+      "ast": 14.7,
+      "fgPct": "47.7%",
+      "threePct": "37.8%"
+    },
+    "predictions": {
+      "polymarket": "20%",
+      "kalshi": "20%",
+      "line": "+11.2"
+    }
+  },
+  "w_t3": {
+    "stats": {
+      "ppg": 82.3,
+      "rpg": 38.0,
+      "ast": 12.7,
+      "fgPct": "44.5%",
+      "threePct": "37.0%"
+    },
+    "predictions": {
+      "polymarket": "32%",
+      "kalshi": "36%",
+      "line": "+10.0"
+    }
+  },
+  "w_t4": {
+    "stats": {
+      "ppg": 80.1,
+      "rpg": 31.5,
+      "ast": 14.2,
+      "fgPct": "45.4%",
+      "threePct": "36.4%"
+    },
+    "predictions": {
+      "polymarket": "38%",
+      "kalshi": "34%",
+      "line": "-11.6"
+    }
+  },
+  "w_t5": {
+    "stats": {
+      "ppg": 72.5,
+      "rpg": 39.2,
+      "ast": 12.2,
+      "fgPct": "46.8%",
+      "threePct": "32.6%"
+    },
+    "predictions": {
+      "polymarket": "35%",
+      "kalshi": "30%",
+      "line": "+7.8"
+    }
+  },
+  "w_t6": {
+    "stats": {
+      "ppg": 73.8,
+      "rpg": 36.0,
+      "ast": 13.0,
+      "fgPct": "43.2%",
+      "threePct": "35.9%"
+    },
+    "predictions": {
+      "polymarket": "75%",
+      "kalshi": "74%",
+      "line": "-5.0"
+    }
+  },
+  "w_t7": {
+    "stats": {
+      "ppg": 81.7,
+      "rpg": 36.0,
+      "ast": 17.1,
+      "fgPct": "44.6%",
+      "threePct": "36.2%"
+    },
+    "predictions": {
+      "polymarket": "48%",
+      "kalshi": "52%",
+      "line": "+2.5"
+    }
+  },
+  "w_t8": {
+    "stats": {
+      "ppg": 81.1,
+      "rpg": 40.0,
+      "ast": 15.5,
+      "fgPct": "44.6%",
+      "threePct": "33.7%"
+    },
+    "predictions": {
+      "polymarket": "23%",
+      "kalshi": "20%",
+      "line": "+4.9"
+    }
+  },
+  "w_t9": {
+    "stats": {
+      "ppg": 71.6,
+      "rpg": 37.4,
+      "ast": 14.7,
+      "fgPct": "44.9%",
+      "threePct": "32.1%"
+    },
+    "predictions": {
+      "polymarket": "68%",
+      "kalshi": "67%",
+      "line": "-8.2"
+    }
+  },
+  "w_t10": {
+    "stats": {
+      "ppg": 81.1,
+      "rpg": 32.7,
+      "ast": 12.4,
+      "fgPct": "46.4%",
+      "threePct": "37.6%"
+    },
+    "predictions": {
+      "polymarket": "36%",
+      "kalshi": "31%",
+      "line": "-5.5"
+    }
+  },
+  "w_t11": {
+    "stats": {
+      "ppg": 76.1,
+      "rpg": 38.1,
+      "ast": 16.7,
+      "fgPct": "45.6%",
+      "threePct": "35.7%"
+    },
+    "predictions": {
+      "polymarket": "29%",
+      "kalshi": "34%",
+      "line": "+13.4"
+    }
+  },
+  "w_t12": {
+    "stats": {
+      "ppg": 71.7,
+      "rpg": 39.9,
+      "ast": 16.2,
+      "fgPct": "47.2%",
+      "threePct": "37.9%"
+    },
+    "predictions": {
+      "polymarket": "15%",
+      "kalshi": "15%",
+      "line": "-4.6"
+    }
+  },
+  "w_t13": {
+    "stats": {
+      "ppg": 81.0,
+      "rpg": 38.0,
+      "ast": 17.4,
+      "fgPct": "47.3%",
+      "threePct": "35.8%"
+    },
+    "predictions": {
+      "polymarket": "72%",
+      "kalshi": "73%",
+      "line": "-11.4"
+    }
+  },
+  "w_t14": {
+    "stats": {
+      "ppg": 82.2,
+      "rpg": 30.7,
+      "ast": 16.6,
+      "fgPct": "47.7%",
+      "threePct": "37.1%"
+    },
+    "predictions": {
+      "polymarket": "87%",
+      "kalshi": "91%",
+      "line": "-0.5"
+    }
+  },
+  "w_t15": {
+    "stats": {
+      "ppg": 77.9,
+      "rpg": 38.4,
+      "ast": 12.7,
+      "fgPct": "46.8%",
+      "threePct": "35.4%"
+    },
+    "predictions": {
+      "polymarket": "36%",
+      "kalshi": "38%",
+      "line": "-13.4"
+    }
+  },
+  "w_t16": {
+    "stats": {
+      "ppg": 73.8,
+      "rpg": 34.9,
+      "ast": 13.3,
+      "fgPct": "43.2%",
+      "threePct": "35.1%"
+    },
+    "predictions": {
+      "polymarket": "70%",
+      "kalshi": "66%",
+      "line": "-10.7"
+    }
+  },
+  "s_t1": {
+    "stats": {
+      "ppg": 79.1,
+      "rpg": 38.8,
+      "ast": 13.8,
+      "fgPct": "45.4%",
+      "threePct": "37.9%"
+    },
+    "predictions": {
+      "polymarket": "28%",
+      "kalshi": "29%",
+      "line": "+13.1"
+    }
+  },
+  "s_t2": {
+    "stats": {
+      "ppg": 78.5,
+      "rpg": 38.9,
+      "ast": 13.0,
+      "fgPct": "45.3%",
+      "threePct": "32.2%"
+    },
+    "predictions": {
+      "polymarket": "47%",
+      "kalshi": "51%",
+      "line": "-14.4"
+    }
+  },
+  "s_t3": {
+    "stats": {
+      "ppg": 81.0,
+      "rpg": 36.6,
+      "ast": 13.5,
+      "fgPct": "42.9%",
+      "threePct": "36.3%"
+    },
+    "predictions": {
+      "polymarket": "74%",
+      "kalshi": "77%",
+      "line": "-9.6"
+    }
+  },
+  "s_t4": {
+    "stats": {
+      "ppg": 73.1,
+      "rpg": 35.5,
+      "ast": 14.6,
+      "fgPct": "45.9%",
+      "threePct": "37.8%"
+    },
+    "predictions": {
+      "polymarket": "48%",
+      "kalshi": "49%",
+      "line": "-14.7"
+    }
+  },
+  "s_t5": {
+    "stats": {
+      "ppg": 72.2,
+      "rpg": 37.9,
+      "ast": 14.7,
+      "fgPct": "43.3%",
+      "threePct": "32.7%"
+    },
+    "predictions": {
+      "polymarket": "87%",
+      "kalshi": "92%",
+      "line": "+2.6"
+    }
+  },
+  "s_t6": {
+    "stats": {
+      "ppg": 75.3,
+      "rpg": 30.4,
+      "ast": 15.7,
+      "fgPct": "43.2%",
+      "threePct": "33.1%"
+    },
+    "predictions": {
+      "polymarket": "85%",
+      "kalshi": "88%",
+      "line": "+9.3"
+    }
+  },
+  "s_t7": {
+    "stats": {
+      "ppg": 70.6,
+      "rpg": 36.8,
+      "ast": 12.6,
+      "fgPct": "42.5%",
+      "threePct": "35.3%"
+    },
+    "predictions": {
+      "polymarket": "42%",
+      "kalshi": "38%",
+      "line": "-12.9"
+    }
+  },
+  "s_t8": {
+    "stats": {
+      "ppg": 81.2,
+      "rpg": 34.0,
+      "ast": 12.1,
+      "fgPct": "45.8%",
+      "threePct": "37.8%"
+    },
+    "predictions": {
+      "polymarket": "45%",
+      "kalshi": "46%",
+      "line": "-5.8"
+    }
+  },
+  "s_t9": {
+    "stats": {
+      "ppg": 79.9,
+      "rpg": 32.6,
+      "ast": 12.2,
+      "fgPct": "47.8%",
+      "threePct": "37.7%"
+    },
+    "predictions": {
+      "polymarket": "51%",
+      "kalshi": "49%",
+      "line": "+10.1"
+    }
+  },
+  "s_t10": {
+    "stats": {
+      "ppg": 73.8,
+      "rpg": 30.8,
+      "ast": 13.0,
+      "fgPct": "44.5%",
+      "threePct": "32.5%"
+    },
+    "predictions": {
+      "polymarket": "52%",
+      "kalshi": "49%",
+      "line": "+11.2"
+    }
+  },
+  "s_t11": {
+    "stats": {
+      "ppg": 82.0,
+      "rpg": 38.9,
+      "ast": 13.3,
+      "fgPct": "42.8%",
+      "threePct": "34.1%"
+    },
+    "predictions": {
+      "polymarket": "47%",
+      "kalshi": "43%",
+      "line": "-1.6"
+    }
+  },
+  "s_t12": {
+    "stats": {
+      "ppg": 72.2,
+      "rpg": 37.8,
+      "ast": 15.1,
+      "fgPct": "43.0%",
+      "threePct": "36.6%"
+    },
+    "predictions": {
+      "polymarket": "66%",
+      "kalshi": "65%",
+      "line": "+0.1"
+    }
+  },
+  "s_t13": {
+    "stats": {
+      "ppg": 72.2,
+      "rpg": 39.6,
+      "ast": 17.5,
+      "fgPct": "45.8%",
+      "threePct": "34.7%"
+    },
+    "predictions": {
+      "polymarket": "88%",
+      "kalshi": "91%",
+      "line": "+10.5"
+    }
+  },
+  "s_t14": {
+    "stats": {
+      "ppg": 79.5,
+      "rpg": 33.1,
+      "ast": 16.4,
+      "fgPct": "47.5%",
+      "threePct": "34.2%"
+    },
+    "predictions": {
+      "polymarket": "26%",
+      "kalshi": "29%",
+      "line": "+5.3"
+    }
+  },
+  "s_t15": {
+    "stats": {
+      "ppg": 76.8,
+      "rpg": 34.3,
+      "ast": 15.0,
+      "fgPct": "43.1%",
+      "threePct": "36.2%"
+    },
+    "predictions": {
+      "polymarket": "18%",
+      "kalshi": "22%",
+      "line": "+14.6"
+    }
+  },
+  "s_t16": {
+    "stats": {
+      "ppg": 81.2,
+      "rpg": 33.2,
+      "ast": 14.2,
+      "fgPct": "44.5%",
+      "threePct": "36.9%"
+    },
+    "predictions": {
+      "polymarket": "54%",
+      "kalshi": "56%",
+      "line": "-11.1"
+    }
+  },
+  "m_t1": {
+    "stats": {
+      "ppg": 74.0,
+      "rpg": 31.7,
+      "ast": 14.3,
+      "fgPct": "46.9%",
+      "threePct": "34.4%"
+    },
+    "predictions": {
+      "polymarket": "48%",
+      "kalshi": "44%",
+      "line": "-8.7"
+    }
+  },
+  "m_t2": {
+    "stats": {
+      "ppg": 77.8,
+      "rpg": 34.3,
+      "ast": 12.4,
+      "fgPct": "43.2%",
+      "threePct": "37.0%"
+    },
+    "predictions": {
+      "polymarket": "45%",
+      "kalshi": "41%",
+      "line": "-7.2"
+    }
+  },
+  "m_t3": {
+    "stats": {
+      "ppg": 84.8,
+      "rpg": 38.4,
+      "ast": 15.8,
+      "fgPct": "47.4%",
+      "threePct": "33.3%"
+    },
+    "predictions": {
+      "polymarket": "89%",
+      "kalshi": "84%",
+      "line": "+5.2"
+    }
+  },
+  "m_t4": {
+    "stats": {
+      "ppg": 84.9,
+      "rpg": 31.1,
+      "ast": 12.7,
+      "fgPct": "45.9%",
+      "threePct": "35.2%"
+    },
+    "predictions": {
+      "polymarket": "25%",
+      "kalshi": "21%",
+      "line": "+9.3"
+    }
+  },
+  "m_t5": {
+    "stats": {
+      "ppg": 71.3,
+      "rpg": 34.6,
+      "ast": 13.0,
+      "fgPct": "46.5%",
+      "threePct": "35.4%"
+    },
+    "predictions": {
+      "polymarket": "82%",
+      "kalshi": "80%",
+      "line": "+14.2"
+    }
+  },
+  "m_t6": {
+    "stats": {
+      "ppg": 70.2,
+      "rpg": 30.8,
+      "ast": 15.3,
+      "fgPct": "42.6%",
+      "threePct": "37.3%"
+    },
+    "predictions": {
+      "polymarket": "51%",
+      "kalshi": "48%",
+      "line": "+6.5"
+    }
+  },
+  "m_t7": {
+    "stats": {
+      "ppg": 74.4,
+      "rpg": 32.0,
+      "ast": 14.3,
+      "fgPct": "43.0%",
+      "threePct": "36.3%"
+    },
+    "predictions": {
+      "polymarket": "19%",
+      "kalshi": "14%",
+      "line": "+5.4"
+    }
+  },
+  "m_t8": {
+    "stats": {
+      "ppg": 71.0,
+      "rpg": 34.5,
+      "ast": 17.4,
+      "fgPct": "47.6%",
+      "threePct": "32.5%"
+    },
+    "predictions": {
+      "polymarket": "60%",
+      "kalshi": "64%",
+      "line": "+7.1"
+    }
+  },
+  "m_t9": {
+    "stats": {
+      "ppg": 81.6,
+      "rpg": 36.5,
+      "ast": 15.4,
+      "fgPct": "42.2%",
+      "threePct": "36.3%"
+    },
+    "predictions": {
+      "polymarket": "41%",
+      "kalshi": "39%",
+      "line": "+9.0"
+    }
+  },
+  "m_t10": {
+    "stats": {
+      "ppg": 81.0,
+      "rpg": 33.7,
+      "ast": 13.8,
+      "fgPct": "42.4%",
+      "threePct": "33.0%"
+    },
+    "predictions": {
+      "polymarket": "28%",
+      "kalshi": "32%",
+      "line": "-11.0"
+    }
+  },
+  "m_t11": {
+    "stats": {
+      "ppg": 71.4,
+      "rpg": 35.5,
+      "ast": 15.3,
+      "fgPct": "44.2%",
+      "threePct": "34.4%"
+    },
+    "predictions": {
+      "polymarket": "71%",
+      "kalshi": "74%",
+      "line": "+4.9"
+    }
+  },
+  "m_t12": {
+    "stats": {
+      "ppg": 77.8,
+      "rpg": 39.4,
+      "ast": 16.3,
+      "fgPct": "43.0%",
+      "threePct": "32.6%"
+    },
+    "predictions": {
+      "polymarket": "62%",
+      "kalshi": "59%",
+      "line": "+3.2"
+    }
+  },
+  "m_t13": {
+    "stats": {
+      "ppg": 70.6,
+      "rpg": 39.0,
+      "ast": 14.2,
+      "fgPct": "43.3%",
+      "threePct": "37.3%"
+    },
+    "predictions": {
+      "polymarket": "32%",
+      "kalshi": "27%",
+      "line": "+0.7"
+    }
+  },
+  "m_t14": {
+    "stats": {
+      "ppg": 71.3,
+      "rpg": 30.4,
+      "ast": 16.8,
+      "fgPct": "43.8%",
+      "threePct": "35.3%"
+    },
+    "predictions": {
+      "polymarket": "41%",
+      "kalshi": "38%",
+      "line": "+7.1"
+    }
+  },
+  "m_t15": {
+    "stats": {
+      "ppg": 81.6,
+      "rpg": 37.9,
+      "ast": 17.8,
+      "fgPct": "46.5%",
+      "threePct": "32.6%"
+    },
+    "predictions": {
+      "polymarket": "43%",
+      "kalshi": "45%",
+      "line": "+9.8"
+    }
+  },
+  "m_t16": {
+    "stats": {
+      "ppg": 83.7,
+      "rpg": 30.9,
+      "ast": 13.8,
+      "fgPct": "42.7%",
+      "threePct": "37.9%"
+    },
+    "predictions": {
+      "polymarket": "12%",
+      "kalshi": "15%",
+      "line": "+0.8"
+    }
+  }
+}
