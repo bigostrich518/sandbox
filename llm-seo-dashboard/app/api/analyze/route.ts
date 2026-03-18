@@ -83,15 +83,22 @@ Output exactly as JSON using this schema:
       contents: promptText,
       config: {
         systemInstruction: `You are an expert LLM SEO analyst. Today's date is ${new Date().toLocaleDateString()}.`,
-        temperature: 0.2, // Lower temperature makes grading more consistent
-        responseMimeType: "application/json", // Force the Gemini API to return clean JSON
-        ...(useGrounding ? { tools: [{ googleSearch: {} }] } : {}),
+        temperature: 0.2,
+        // responseMimeType and googleSearch cannot be used together —
+        // grounding adds citation markup that breaks strict JSON mode
+        ...(useGrounding
+          ? { tools: [{ googleSearch: {} }] }
+          : { responseMimeType: "application/json" }
+        ),
       }
     });
 
-    // Extract JSON safely
+    // Extract JSON safely (especially important in grounded mode where response may have extra text)
     let aiText = resGemini.text || "{}";
     aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
+    // In grounded mode, extract just the JSON object if there's surrounding text
+    const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) aiText = jsonMatch[0];
 
     const rec = await prisma.recommendation.create({
       data: { content: aiText }
