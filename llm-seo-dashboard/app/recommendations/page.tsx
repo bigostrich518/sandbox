@@ -45,7 +45,7 @@ export default function RecommendationsPage() {
         }),
       });
       const data = await res.json();
-      
+
       if (res.ok && data.recommendation) {
         setRecommendation(JSON.parse(data.recommendation.content));
       } else {
@@ -102,21 +102,30 @@ export default function RecommendationsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Scores Overview */}
           <div className="lg:col-span-1 space-y-4">
             <h2 className="text-xl font-semibold text-white">Sentiment Alignment Scores</h2>
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
               {recommendation.scores?.map((scoreObj: any, idx: number) => (
                 <div key={idx} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-300 truncate pr-4" title={scoreObj.promptText || `Prompt ${scoreObj.promptId}`}>
-                      {scoreObj.modelName}
-                    </span>
-                    <span className="font-bold text-white">{scoreObj.score}/10</span>
+                  <div className="flex justify-between text-sm items-start">
+                    <div className="flex flex-col pr-4 overflow-hidden">
+                      <span className="text-slate-300 font-medium" title={scoreObj.promptText || `Prompt ${scoreObj.promptId}`}>
+                        {scoreObj.modelName}
+                      </span>
+
+                      {/* This is the new part that displays the reasoning text */}
+                      {scoreObj.reasoning && (
+                        <span className="text-xs text-slate-500 mt-0.5 line-clamp-2" title={scoreObj.reasoning}>
+                          {scoreObj.reasoning}
+                        </span>
+                      )}
+                    </div>
+                    <span className="font-bold text-white shrink-0">{scoreObj.score}/10</span>
                   </div>
                   <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className={`h-full rounded-full transition-all duration-1000 ${
                         scoreObj.score >= 8 ? "bg-green-500" : scoreObj.score >= 5 ? "bg-yellow-500" : "bg-red-500"
                       }`}
@@ -128,25 +137,25 @@ export default function RecommendationsPage() {
             </div>
           </div>
 
-          {/* Actionable Recommendations */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold text-white">Actionable Next Steps</h2>
-            <div className="space-y-4">
-              {recommendation.recommendations?.map((rec: string, idx: number) => (
-                <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex gap-4 items-start shadow-sm hover:border-slate-700 transition-colors">
-                  <div className="bg-purple-500/20 text-purple-400 w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold border border-purple-500/30">
-                    {idx + 1}
+            {/* Actionable Recommendations */}
+            <div className="lg:col-span-2 space-y-4">
+              <h2 className="text-xl font-semibold text-white">Actionable Next Steps</h2>
+              <div className="space-y-4">
+                {recommendation.recommendations?.map((rec: string, idx: number) => (
+                  <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex gap-4 items-start shadow-sm hover:border-slate-700 transition-colors">
+                    <div className="bg-purple-500/20 text-purple-400 w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold border border-purple-500/30">
+                      {idx + 1}
+                    </div>
+                    <p className="text-slate-300 leading-relaxed pt-1">
+                      {rec}
+                    </p>
                   </div>
-                  <p className="text-slate-300 leading-relaxed pt-1">
-                    {rec}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-        </div>
+          </div>
       )}
-    </div>
-  );
+        </div>
+      );
 }

@@ -32,38 +32,59 @@ export async function POST(request: Request) {
     }
 
     const domain = await prisma.targetDomain.findFirst({ include: { objectives: true } });
-    const responses = await prisma.lLMResponse.findMany({ 
-      orderBy: { createdAt: "desc" }, 
+    const responses = await prisma.lLMResponse.findMany({
+      orderBy: { createdAt: "desc" },
       take: 30, // Last 30 responses max as context
-      include: { prompt: true } 
+      include: { prompt: true }
     });
 
     const objectivesCtx = domain?.objectives.map((o) => o.text).join("; ") || "None provided";
-    
+
     // Group responses context safely
-    const responsesCtx = responses.map((r) => 
+    const responsesCtx = responses.map((r) =>
       `Prompt: ${r.prompt.text} | Model: ${r.modelName} | Response: ${r.responseText}`
     ).join("\n\n");
 
     const promptText = `
-      You are an LLM SEO analyst.
-      1. Website content: ${domain?.scrapedContent ? domain.scrapedContent.substring(0, 10000) : "No content"}
-      2. Campaign objectives: ${objectivesCtx}
-      3. Recent AI responses to tracked prompts: ${responsesCtx}
+You are an expert LLM SEO Analyst. Your goal is to analyze how well various AI models are currently representing a target brand/website, and provide actionable recommendations to improve the website's content so future AI responses align better with the campaign objectives.
 
-      Task:
-      - Score the sentiment/alignment of each AI's response (0-10, where 10 = perfectly aligned with objectives)
-      - Generate specific content recommendations to add to the website to improve these scores next time.
-      - Return ONLY a valid JSON object starting with '{'. Format: { "scores": [{ "promptText": string, "modelName": string, "score": number }], "recommendations": [string, string...] }
-    `;
+<objectives>
+${objectivesCtx}
+</objectives>
 
-    // Recommendation engine never uses Search Grounding — model is user-selected
+<website_content>
+${domain?.scrapedContent ? domain.scrapedContent.substring(0, 10000) : "No content"}
+</website_content>
+
+<recent_ai_responses>
+${responsesCtx}
+</recent_ai_responses>
+
+Task:
+1. For each AI response, evaluate its alignment with the campaign objectives on a scale of 0 to 10 (10 = perfectly aligned/positive, 0 = completely misaligned/negative).
+2. Generate 3-5 specific, actionable content changes the website owner should make to their site to improve these AI responses in the future.
+
+Output exactly as JSON using this schema:
+{
+  "scores": [
+    { 
+      "promptText": "The prompt evaluated", 
+      "modelName": "The model that responded", 
+      "reasoning": "A brief 1-sentence explanation of why you gave this score",
+      "score": 8
+    }
+  ],
+  "recommendations": ["Recommendation 1", "Recommendation 2"]
+}
+`;
+
     const resGemini = await ai.models.generateContent({
       model: modelToUse,
       contents: promptText,
       config: {
-        systemInstruction: `You are an LLM SEO analyst. Today's date is ${new Date().toLocaleDateString()}.`,
-        temperature: 0.7,
+        systemInstruction: `You are an expert LLM SEO analyst. Today's date is ${new Date().toLocaleDateString()}.`,
+        temperature: 0.2, // Lower temperature makes grading more consistent
+        responseMimeType: "application/json", // Force the Gemini API to return clean JSON
         ...(useGrounding ? { tools: [{ googleSearch: {} }] } : {}),
       }
     });
