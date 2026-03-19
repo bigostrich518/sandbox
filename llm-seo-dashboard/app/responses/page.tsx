@@ -6,6 +6,7 @@ import { useCampaign } from "@/components/CampaignContext";
 export default function ResponsesPage() {
   const [responses, setResponses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
 
   const { selectedCampaignId } = useCampaign();
 
@@ -51,10 +52,23 @@ export default function ResponsesPage() {
           </p>
         </div>
         <button
-          onClick={fetchResponses}
-          className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors border border-slate-700 shadow-sm"
+          onClick={async () => {
+            if (!selectedCampaignId) return;
+            if (!window.confirm("Are you sure you want to delete all saved responses for this project? This cannot be undone.")) return;
+            setClearing(true);
+            try {
+              await fetch(`/api/responses?campaignId=${selectedCampaignId}`, { method: "DELETE" });
+              await fetchResponses();
+            } catch (err) {
+              console.error("Failed to clear responses:", err);
+            } finally {
+              setClearing(false);
+            }
+          }}
+          disabled={clearing || responses.length === 0}
+          className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/30 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          ↻ Refresh
+          {clearing ? "Clearing..." : "🗑 Clear Responses"}
         </button>
       </div>
 

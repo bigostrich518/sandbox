@@ -23,3 +23,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const campaignId = searchParams.get("campaignId");
+
+    if (!campaignId) {
+      return NextResponse.json({ error: "campaignId is required" }, { status: 400 });
+    }
+
+    const result = await prisma.lLMResponse.deleteMany({
+      where: {
+        prompt: {
+          campaignId: parseInt(campaignId),
+        },
+      },
+    });
+
+    return NextResponse.json({ deleted: result.count });
+  } catch (error) {
+    console.error("Error deleting responses:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
