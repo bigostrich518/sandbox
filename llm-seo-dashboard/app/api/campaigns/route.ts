@@ -9,17 +9,9 @@ export async function GET() {
         return NextResponse.json(campaigns);
     } catch (error: any) {
         console.error("GET Campaigns Error:", error);
-        const keys = prisma ? Object.keys(prisma) : ["prisma-is-null"];
-        let prismaDir = "unknown";
-        try {
-            // @ts-ignore
-            prismaDir = require('path').dirname(require.resolve('@prisma/client'));
-        } catch (e) {}
         return NextResponse.json({ 
             error: "Internal Server Error", 
             detail: error.message,
-            availableModels: keys.filter(k => !k.startsWith("_") && !k.startsWith("$")),
-            prismaDir
         }, { status: 500 });
     }
 }
