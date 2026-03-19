@@ -57,8 +57,15 @@ export default function PromptsPage() {
         body: JSON.stringify({ mockMode: isMockMode, campaignId: selectedCampaignId }),
       });
       const data = await res.json();
-      if (res.ok) setMessage(`Success! Recorded ${data.count} new responses.`);
-      else setMessage(`Error: ${data.error}`);
+      if (res.ok && data.count > 0) {
+        setMessage(`Success! Recorded ${data.count} new responses.`);
+      } else if (res.ok && data.errors?.length) {
+        setMessage(`API errors: ${data.errors.join("; ")}`);
+      } else if (res.ok) {
+        setMessage("No responses recorded. Check your API key and prompts.");
+      } else {
+        setMessage(`Error: ${data.error}`);
+      }
     } catch (e) {
       setMessage("Polling failed.");
     }

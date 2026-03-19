@@ -29,6 +29,7 @@ export async function POST(request: Request) {
     }
 
     const savedResponses = [];
+    const errors: string[] = [];
 
     for (const prompt of prompts) {
       if (mockMode) {
@@ -77,8 +78,11 @@ Today's date is ${new Date().toLocaleDateString()}.`;
         const genConfig = {
           systemInstruction,
           temperature: 0.7,
-          responseMimeType: "application/json",
-          tools: [{ googleSearch: {} }]
+          // Use Google Search grounding so responses reflect what the model
+          // actually serves to users in real-time, not just training data.
+          // NOTE: cannot combine googleSearch with responseMimeType, so we
+          // extract JSON manually from the response text below.
+          tools: [{ googleSearch: {} }],
         };
 
         // Gemini 2.5 Flash
@@ -89,9 +93,15 @@ Today's date is ${new Date().toLocaleDateString()}.`;
             config: genConfig
           });
 
+          // Extract JSON from grounded response (may contain extra text/citations)
+          let rawText = resGemini25.text || "{}";
+          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) rawText = jsonMatch[0];
+
           let aiData: any = { responseText: resGemini25.text || "No response", sentimentScore: 5, reasoning: "" };
           try {
-             const parsed = JSON.parse(resGemini25.text || "{}");
+             const parsed = JSON.parse(rawText);
              if (parsed.responseText) aiData = parsed;
           } catch (e) {}
 
@@ -107,11 +117,16 @@ Today's date is ${new Date().toLocaleDateString()}.`;
           }));
         } catch (e: any) {
           console.error("Gemini 2.5 Flash Error:", e.message);
+          errors.push(`gemini-2.5-flash: ${e.message}`);
         }
       }
     }
 
-    return NextResponse.json({ success: true, count: savedResponses.length });
+    return NextResponse.json({ 
+      success: savedResponses.length > 0, 
+      count: savedResponses.length,
+      ...(errors.length > 0 && { errors }),
+    });
     } catch (error: any) {
     console.error("Error polling models:", error.message);
     return NextResponse.json({ 
