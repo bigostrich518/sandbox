@@ -130,7 +130,6 @@ export default function RecommendationsPage() {
         <div className="space-y-8">
           {/* TOP SECTION: Sentiment Health Overview */}
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 opacity-10 text-8xl">📊</div>
             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start justify-between">
               <div className="space-y-4 text-center md:text-left">
                 <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Brand Sentiment Health</h2>
