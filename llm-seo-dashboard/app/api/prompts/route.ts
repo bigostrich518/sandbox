@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const campaignId = searchParams.get("campaignId");
+
     const prompts = await prisma.prompt.findMany({
+      where: campaignId ? { campaignId: parseInt(campaignId) } : {},
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(prompts);
@@ -15,13 +19,16 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { text } = await request.json();
-    if (!text) {
-      return NextResponse.json({ error: "Prompt text is required" }, { status: 400 });
+    const { text, campaignId } = await request.json();
+    if (!text || !campaignId) {
+      return NextResponse.json({ error: "Prompt text and Campaign ID are required" }, { status: 400 });
     }
 
     const prompt = await prisma.prompt.create({
-      data: { text },
+      data: { 
+        text,
+        campaignId: parseInt(campaignId)
+      },
     });
 
     return NextResponse.json(prompt, { status: 201 });

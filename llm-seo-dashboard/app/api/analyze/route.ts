@@ -10,6 +10,7 @@ export async function POST(request: Request) {
     const mockMode = body.mockMode ?? false;
     const modelToUse = body.model || "gemini-2.5-flash";
     const useGrounding = body.useGrounding ?? false;
+    const { campaignId } = body;
 
     if (mockMode) {
       const mockRecs = JSON.stringify({
@@ -21,17 +22,25 @@ export async function POST(request: Request) {
         recommendations: [
           "[MOCK] Add more keywords related to your core objective.",
           "[MOCK] Ensure the pricing page is more clearly linked from the homepage.",
-          "[MOCK] Clarify the primary value proposition in the hero section."
+          "[Mock] Clarify the primary value proposition in the hero section."
         ]
       });
 
+      const campaign = campaignId 
+        ? await prisma.campaign.findUnique({ where: { id: parseInt(campaignId) } })
+        : await prisma.campaign.findFirst();
+        
+      if (!campaign) return NextResponse.json({ error: "No campaign configured" }, { status: 400 });
       const rec = await prisma.recommendation.create({
-        data: { content: mockRecs }
+        data: { content: mockRecs, campaignId: campaign.id }
       });
       return NextResponse.json({ success: true, recommendation: rec });
     }
 
-    const domain = await prisma.targetDomain.findFirst({ include: { objectives: true } });
+    const domain = await prisma.campaign.findUnique({ 
+      where: campaignId ? { id: parseInt(campaignId) } : (await prisma.campaign.findFirst())?.id ? { id: (await prisma.campaign.findFirst())!.id } : { id: -1 },
+      include: { objectives: true } 
+    });
     const responses = await prisma.lLMResponse.findMany({
       orderBy: { createdAt: "desc" },
       take: 30, // Last 30 responses max as context
@@ -101,7 +110,7 @@ Output exactly as JSON using this schema:
     if (jsonMatch) aiText = jsonMatch[0];
 
     const rec = await prisma.recommendation.create({
-      data: { content: aiText }
+      data: { content: aiText, campaignId: domain!.id }
     });
 
     return NextResponse.json({ success: true, recommendation: rec });

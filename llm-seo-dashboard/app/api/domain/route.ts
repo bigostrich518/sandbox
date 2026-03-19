@@ -3,62 +3,62 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const domain = await prisma.targetDomain.findFirst({
+    const campaign = await prisma.campaign.findFirst({
       include: {
         objectives: true,
       },
     });
-    return NextResponse.json(domain || null);
+    return NextResponse.json(campaign || null);
   } catch (error) {
-    console.error("Error fetching domain:", error);
+    console.error("Error fetching campaign:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { url, objectives } = await request.json();
+    const { name, url, objectives } = await request.json();
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
-    let domain = await prisma.targetDomain.findFirst();
+    let campaign = await prisma.campaign.findFirst();
 
-    if (domain) {
-      domain = await prisma.targetDomain.update({
-        where: { id: domain.id },
-        data: { url },
+    if (campaign) {
+      campaign = await prisma.campaign.update({
+        where: { id: campaign.id },
+        data: { name: name || campaign.name, url },
       });
     } else {
-      domain = await prisma.targetDomain.create({
-        data: { url },
+      campaign = await prisma.campaign.create({
+        data: { name: name || "My Campaign", url },
       });
     }
 
     if (objectives && Array.isArray(objectives)) {
       // Clear existing
       await prisma.campaignObjective.deleteMany({
-        where: { domainId: domain.id },
+        where: { campaignId: campaign.id },
       });
 
       // Create new
       await prisma.campaignObjective.createMany({
         data: objectives.map((text: string) => ({
           text,
-          domainId: domain!.id,
+          campaignId: campaign!.id,
         })),
       });
     }
 
-    const updatedDomain = await prisma.targetDomain.findUnique({
-      where: { id: domain.id },
+    const updatedCampaign = await prisma.campaign.findUnique({
+      where: { id: campaign.id },
       include: { objectives: true },
     });
 
-    return NextResponse.json(updatedDomain);
+    return NextResponse.json(updatedCampaign);
   } catch (error) {
-    console.error("Error saving domain:", error);
+    console.error("Error saving campaign:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

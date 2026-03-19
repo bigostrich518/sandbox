@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useMockMode } from "@/components/MockModeContext";
+import { useCampaign } from "@/components/CampaignContext";
 
 export default function PromptsPage() {
   const [prompts, setPrompts] = useState<any[]>([]);
@@ -9,26 +10,32 @@ export default function PromptsPage() {
   const [loading, setLoading] = useState(false);
   const [polling, setPolling] = useState(false);
   const { isMockMode } = useMockMode();
+  const { selectedCampaignId } = useCampaign();
   const [message, setMessage] = useState("");
 
-  const fetchPrompts = async () => {
-    const res = await fetch("/api/prompts");
+  const fetchPrompts = useCallback(async () => {
+    if (!selectedCampaignId) {
+      setPrompts([]);
+      return;
+    }
+    const res = await fetch(`/api/prompts?campaignId=${selectedCampaignId}`);
     const data = await res.json();
-    setPrompts(data);
-  };
+    setPrompts(Array.isArray(data) ? data : []);
+  }, [selectedCampaignId]);
 
   useEffect(() => {
     fetchPrompts();
-  }, []);
+  }, [fetchPrompts]);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPrompt.trim()) return;
+    if (!selectedCampaignId) return;
     setLoading(true);
     await fetch("/api/prompts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: newPrompt }),
+      body: JSON.stringify({ text: newPrompt, campaignId: selectedCampaignId }),
     });
     setNewPrompt("");
     await fetchPrompts();
@@ -47,7 +54,7 @@ export default function PromptsPage() {
       const res = await fetch("/api/poll", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mockMode: isMockMode }),
+        body: JSON.stringify({ mockMode: isMockMode, campaignId: selectedCampaignId }),
       });
       const data = await res.json();
       if (res.ok) setMessage(`Success! Recorded ${data.count} new responses.`);

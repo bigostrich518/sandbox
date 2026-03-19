@@ -3,13 +3,27 @@ import { prisma } from "@/lib/prisma";
 import * as cheerio from "cheerio";
 import { chromium } from "playwright";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const domain = await prisma.targetDomain.findFirst();
+    const body = await request.json().catch(() => ({}));
+    const { campaignId } = body;
+
+    console.log(`Starting crawl for campaignId: ${campaignId}`);
+    
+    if (!campaignId) {
+      return NextResponse.json({ error: "No campaignId provided" }, { status: 400 });
+    }
+
+    const domain = await prisma.campaign.findUnique({
+      where: { id: parseInt(campaignId) }
+    });
 
     if (!domain || !domain.url) {
+      console.error("Crawl error: No target domain found for ID", campaignId);
       return NextResponse.json({ error: "No target domain configured" }, { status: 400 });
     }
+
+    console.log(`Crawling URL: ${domain.url}`);
 
     const baseUrl = new URL(domain.url);
     const visited = new Set<string>();
@@ -32,22 +46,27 @@ export async function POST() {
         visited.add(currentUrl);
 
         try {
+          console.log(`Navigating to: ${currentUrl}`);
           const page = await context.newPage();
-          // Wait for network idle to ensure SPA renders
+          // Wait for network idle AND a small delay to ensure any dynamic content/links load
           await page.goto(currentUrl, { waitUntil: "networkidle", timeout: 15000 });
-          
-          const html = await page.content();
-          const $ = cheerio.load(html);
+          await page.waitForTimeout(1000); 
 
-          // Find internal links to add to queue BEFORE removing elements
-          $("a[href]").each((_, el) => {
-            const href = $(el).attr("href");
-            if (!href) return;
-            
+          console.log(`Crawl success: ${currentUrl}`);
+          
+          // Use the browser's DOM to find links - much more reliable for SPAs
+          const links = await page.$$eval('a[href]', (as) => as.map(a => (a as HTMLAnchorElement).href));
+          console.log(`Discovered ${links.length} links on ${currentUrl}`);
+          
+          const baseHostname = baseUrl.hostname.replace(/^www\./, '');
+
+          links.forEach((href) => {
             try {
               const absoluteUrl = new URL(href, currentUrl);
+              const currentHostname = absoluteUrl.hostname.replace(/^www\./, '');
+
               // Only follow links on the same domain that we haven't visited
-              if (absoluteUrl.hostname === baseUrl.hostname && !visited.has(absoluteUrl.href)) {
+              if (currentHostname === baseHostname && !visited.has(absoluteUrl.href)) {
                 // Ignore fragments and query params for simplicity of unique pages
                 absoluteUrl.hash = "";
                 absoluteUrl.search = "";
@@ -65,6 +84,10 @@ export async function POST() {
             }
           });
 
+          // Get the HTML content AFTER link extraction
+          const html = await page.content();
+          const $ = cheerio.load(html);
+
           // Remove unwanted elements
           $("nav, header, footer, script, style, aside, iframe, noscript").remove();
 
@@ -76,7 +99,6 @@ export async function POST() {
             totalText += `\n\n--- Page: ${currentUrl} ---\n\n` + cleanedText;
           }
           pagesCrawled++;
-
 
           await page.close();
 
@@ -92,7 +114,7 @@ export async function POST() {
 
     const finalScrapedContent = totalText.substring(0, 50000);
 
-    const updatedDomain = await prisma.targetDomain.update({
+    const updatedDomain = await prisma.campaign.update({
       where: { id: domain.id },
       data: {
         scrapedContent: finalScrapedContent, // Cap at 50k chars
@@ -100,6 +122,8 @@ export async function POST() {
         lastCrawledAt: new Date(),
       },
     });
+
+    console.log(`Crawl completed. Pages: ${pagesCrawled}, Content Length: ${finalScrapedContent.length}`);
 
     return NextResponse.json({ 
       success: true, 

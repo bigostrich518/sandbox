@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const campaignId = searchParams.get("campaignId");
+
     const responses = await prisma.lLMResponse.findMany({
+      where: campaignId ? {
+        prompt: {
+          campaignId: parseInt(campaignId)
+        }
+      } : {},
       orderBy: { createdAt: "desc" },
       include: {
         prompt: true,

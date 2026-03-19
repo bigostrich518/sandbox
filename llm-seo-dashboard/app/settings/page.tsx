@@ -1,40 +1,51 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useCampaign } from "@/components/CampaignContext";
 
 export default function SettingsPage() {
+  const { selectedCampaignId, refreshCampaigns } = useCampaign();
+  const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [objectives, setObjectives] = useState("");
   const [loading, setLoading] = useState(false);
   const [crawling, setCrawling] = useState(false);
   const [message, setMessage] = useState("");
-  const [crawlStats, setCrawlStats] = useState<{totalCharacters: number, excerpt: string, pagesCrawled: number, crawledUrls?: string[]} | null>(null);
+  const [crawlStats, setCrawlStats] = useState<{ totalCharacters: number, excerpt: string, pagesCrawled: number, crawledUrls?: string[] } | null>(null);
 
   useEffect(() => {
-    fetch("/api/domain")
+    if (!selectedCampaignId) return;
+    fetch(`/api/campaigns/${selectedCampaignId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data) {
+          setName(data.name || "");
           setUrl(data.url || "");
           setObjectives(data.objectives?.map((o: any) => o.text).join("\n") || "");
         }
       });
-  }, []);
+  }, [selectedCampaignId]);
 
   const handleSave = async () => {
+    if (!selectedCampaignId) return;
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("/api/domain", {
-        method: "POST",
+      const res = await fetch(`/api/campaigns/${selectedCampaignId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name,
           url,
           objectives: objectives.split("\n").filter((o) => o.trim()),
         }),
       });
-      if (res.ok) setMessage("Saved successfully!");
-      else setMessage("Failed to save.");
+      if (res.ok) {
+        setMessage("Saved successfully!");
+        refreshCampaigns(); // Update sidebar name
+      } else {
+        setMessage("Failed to save.");
+      }
     } catch (e) {
       setMessage("Error saving.");
     }
@@ -49,11 +60,15 @@ export default function SettingsPage() {
     setCrawling(true);
     setMessage("");
     try {
-      const res = await fetch("/api/crawl", { method: "POST" });
+      const res = await fetch("/api/crawl", { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaignId: selectedCampaignId })
+      });
       const data = await res.json();
       if (res.ok) {
         setMessage(`Crawled ${data.pagesCrawled} pages successfully.`);
-        if (data.crawlStats) setCrawlStats({...data.crawlStats, pagesCrawled: data.pagesCrawled});
+        if (data.crawlStats) setCrawlStats({ ...data.crawlStats, pagesCrawled: data.pagesCrawled });
       } else {
         setMessage(`Crawl failed: ${data.error}`);
       }
@@ -73,6 +88,17 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-2">Project Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="My Campaign"
+            className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Target Domain URL</label>
           <input
@@ -105,7 +131,7 @@ export default function SettingsPage() {
           >
             {loading ? "Saving..." : "Save Settings"}
           </button>
-          
+
           <button
             onClick={handleCrawl}
             disabled={crawling || !url}

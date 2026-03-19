@@ -10,43 +10,55 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model TargetDomain {
+model Campaign {
   id             Int                 @id @default(autoincrement())
+  name           String              // Added so you can name your projects
   url            String
   scrapedContent String?
   pagesCrawled   Int?
   lastCrawledAt  DateTime?
+  createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
+  
   objectives     CampaignObjective[]
+  prompts        Prompt[]
+  recommendations Recommendation[]
 }
 
 model CampaignObjective {
-  id       Int          @id @default(autoincrement())
-  text     String
-  domain   TargetDomain @relation(fields: [domainId], references: [id])
-  domainId Int
+  id         Int      @id @default(autoincrement())
+  text       String
+  campaignId Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
 
 model Prompt {
-  id        Int           @id @default(autoincrement())
-  text      String
-  createdAt DateTime      @default(now())
-  responses LLMResponse[]
+  id         Int           @id @default(autoincrement())
+  text       String
+  createdAt  DateTime      @default(now())
+  
+  campaignId Int
+  campaign   Campaign      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  responses  LLMResponse[]
 }
 
 model LLMResponse {
   id             Int      @id @default(autoincrement())
-  prompt         Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
   promptId       Int
+  prompt         Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
   modelName      String
   responseText   String
   sentimentScore Float?
+  reasoning      String?
   isMock         Boolean  @default(false)
   createdAt      DateTime @default(now())
 }
 
 model Recommendation {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  content    String
+  createdAt  DateTime @default(now())
+  
+  campaignId Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
