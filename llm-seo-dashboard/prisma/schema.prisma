@@ -17,6 +17,7 @@ model Campaign {
   scrapedContent String?
   pagesCrawled   Int?
   lastCrawledAt  DateTime?
+  lastPolledAt   DateTime?
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   

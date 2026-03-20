@@ -11,6 +11,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [crawling, setCrawling] = useState(false);
   const [message, setMessage] = useState("");
+  const [lastPolledAt, setLastPolledAt] = useState<string | null>(null);
   const [crawlStats, setCrawlStats] = useState<{ totalCharacters: number, excerpt: string, pagesCrawled: number, crawledUrls?: string[] } | null>(null);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function SettingsPage() {
           setName(data.name || "");
           setUrl(data.url || "");
           setObjectives(data.objectives?.map((o: any) => o.text).join("\n") || "");
+          setLastPolledAt(data.lastPolledAt || null);
         }
       });
   }, [selectedCampaignId]);
@@ -97,6 +99,12 @@ export default function SettingsPage() {
             placeholder="My Campaign"
             className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           />
+          {lastPolledAt && (
+            <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse" />
+              Last polled: {new Date(lastPolledAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+            </p>
+          )}
         </div>
 
         <div>

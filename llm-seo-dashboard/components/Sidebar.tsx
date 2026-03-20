@@ -7,6 +7,7 @@ import { useMockMode } from "./MockModeContext";
 import { useCampaign } from "./CampaignContext";
 
 const navItems = [
+  { name: "Dashboard", href: "/dashboard", icon: "📊" },
   { name: "Settings", href: "/settings", icon: "⚙️" },
   { name: "Prompts", href: "/prompts", icon: "📝" },
   { name: "Responses", href: "/responses", icon: "🤖" },

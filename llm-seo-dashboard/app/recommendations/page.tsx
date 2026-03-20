@@ -14,6 +14,11 @@ export default function RecommendationsPage() {
 
   const { selectedCampaignId } = useCampaign();
 
+  // Content generation state — keyed by recommendation index
+  const [generatingIdx, setGeneratingIdx] = useState<number | null>(null);
+  const [generatedContent, setGeneratedContent] = useState<Record<number, string>>({});
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
   const fetchLatest = useCallback(async () => {
     if (!selectedCampaignId) {
       setRecommendation(null);
@@ -39,6 +44,12 @@ export default function RecommendationsPage() {
     fetchLatest();
   }, [fetchLatest]);
 
+  // Reset generated content when campaign changes
+  useEffect(() => {
+    setGeneratedContent({});
+    setCopiedIdx(null);
+  }, [selectedCampaignId]);
+
   const handleAnalyze = async () => {
     if (!selectedCampaignId) return;
     setAnalyzing(true);
@@ -58,6 +69,7 @@ export default function RecommendationsPage() {
 
       if (res.ok && data.recommendation) {
         setRecommendation(JSON.parse(data.recommendation.content));
+        setGeneratedContent({});
       } else {
         setError(data.error || "Failed to analyze");
       }
@@ -65,6 +77,38 @@ export default function RecommendationsPage() {
       setError("Analysis task failed.");
     }
     setAnalyzing(false);
+  };
+
+  const handleGenerateContent = async (recText: string, idx: number) => {
+    if (!selectedCampaignId) return;
+    setGeneratingIdx(idx);
+    try {
+      const res = await fetch("/api/generate-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recommendationText: recText,
+          campaignId: selectedCampaignId,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.content) {
+        setGeneratedContent((prev) => ({ ...prev, [idx]: data.content }));
+      }
+    } catch (e) {
+      console.error("Content generation failed:", e);
+    }
+    setGeneratingIdx(null);
+  };
+
+  const handleCopy = async (text: string, idx: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIdx(idx);
+      setTimeout(() => setCopiedIdx(null), 2000);
+    } catch (e) {
+      console.error("Copy failed:", e);
+    }
   };
 
   const getOverallHealth = () => {
@@ -124,7 +168,7 @@ export default function RecommendationsPage() {
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-20 text-center text-slate-500">
           <div className="text-5xl mb-6">🎯</div>
           <p className="text-lg">No analysis available for this project.</p>
-          <p className="text-sm mt-2">Click "Run Analysis" to get tailored content recommendations.</p>
+          <p className="text-sm mt-2">Click &quot;Run Analysis&quot; to get tailored content recommendations.</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -137,7 +181,7 @@ export default function RecommendationsPage() {
                    <span className={`text-6xl font-black ${getHealthColor()}`}>{getOverallHealth()}</span>
                 </div>
                 <p className="text-slate-400 max-w-md">
-                  Based on the latest model responses, your brand's alignment with its core objectives is currently <span className="text-white font-medium">{getOverallHealth().toLowerCase()}</span>.
+                  Based on the latest model responses, your brand&apos;s alignment with its core objectives is currently <span className="text-white font-medium">{getOverallHealth().toLowerCase()}</span>.
                 </p>
               </div>
 
@@ -172,31 +216,74 @@ export default function RecommendationsPage() {
                 {recommendation.scores?.map((scoreObj: any, idx: number) => (
                   <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm leading-relaxed shadow-sm">
                     <span className="text-xs font-bold text-slate-500 block mb-1 uppercase tracking-tight">{scoreObj.modelName} Reasoning:</span>
-                    <span className="text-slate-300 italic">"{scoreObj.reasoning || "No reasoning provided."}"</span>
+                    <span className="text-slate-300 italic">&quot;{scoreObj.reasoning || "No reasoning provided."}&quot;</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Actionable Recommendations */}
+            {/* Actionable Recommendations with Content Generation */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                  <span className="text-purple-400">⚡</span> Content Recommendations
               </h2>
               <div className="grid grid-cols-1 gap-4">
                 {recommendation.recommendations?.map((rec: string, idx: number) => (
-                  <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex gap-5 items-start shadow-md hover:border-slate-600 transition-all group">
-                    <div className="bg-gradient-to-br from-purple-500 to-blue-500 text-white w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black shadow-lg shadow-purple-900/40">
-                      {idx + 1}
-                    </div>
-                    <div>
-                      <p className="text-slate-200 leading-relaxed font-medium">
-                        {rec}
-                      </p>
-                      <div className="mt-2 flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                         Priority High • content Update
+                  <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-md hover:border-slate-600 transition-all group">
+                    <div className="p-6 flex gap-5 items-start">
+                      <div className="bg-gradient-to-br from-purple-500 to-blue-500 text-white w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black shadow-lg shadow-purple-900/40">
+                        {idx + 1}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-slate-200 leading-relaxed font-medium">
+                          {rec}
+                        </p>
+                        <div className="mt-3 flex items-center gap-3">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            Priority High • Content Update
+                          </span>
+                          {!generatedContent[idx] && (
+                            <button
+                              onClick={() => handleGenerateContent(rec, idx)}
+                              disabled={generatingIdx !== null}
+                              className="text-xs bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 px-3 py-1.5 rounded-lg font-medium transition-colors border border-purple-500/30 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                            >
+                              {generatingIdx === idx ? (
+                                <>
+                                  <span className="animate-spin">⏳</span> Generating...
+                                </>
+                              ) : (
+                                <>✨ Generate Content</>
+                              )}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
+
+                    {/* Generated Content Panel */}
+                    {generatedContent[idx] && (
+                      <div className="border-t border-slate-800 bg-slate-950/50 p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-xs font-bold text-green-500/70 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>✅</span> Generated Content
+                          </span>
+                          <button
+                            onClick={() => handleCopy(generatedContent[idx], idx)}
+                            className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-medium transition-colors border border-slate-700 flex items-center gap-1.5"
+                          >
+                            {copiedIdx === idx ? (
+                              <><span>✅</span> Copied!</>
+                            ) : (
+                              <><span>📋</span> Copy</>
+                            )}
+                          </button>
+                        </div>
+                        <div className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap bg-slate-900/50 p-4 rounded-lg border border-slate-800 max-h-64 overflow-y-auto custom-scrollbar">
+                          {generatedContent[idx]}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
