@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
     <link rel="icon" type="image/svg+xml"
         href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/icon-tabler/device-gamepad.svg">
-    <title>AI Dev Sandbox - Personal Porfolio</title>
+    <title>AI Dev Sandbox</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -55,10 +57,105 @@
             /* Accent color */
             border-radius: 2px;
         }
+        /* Password overlay */
+        #password-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111827;
+        }
+
+        #password-overlay .pw-box {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        #password-overlay h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #password-overlay p {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        #password-overlay input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: #e5e7eb;
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        #password-overlay input:focus {
+            border-color: #818cf8;
+        }
+
+        #password-overlay button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: none;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        #password-overlay button:hover {
+            opacity: 0.9;
+        }
+
+        #password-overlay .pw-error {
+            color: #f87171;
+            font-size: 0.8rem;
+            margin-top: 0.75rem;
+            min-height: 1.2em;
+        }
+
+        body.locked {
+            overflow: hidden;
+        }
     </style>
 </head>
 
-<body class="antialiased">
+<body class="antialiased locked">
+
+    <!-- Password Gate -->
+    <div id="password-overlay">
+        <div class="pw-box">
+            <h2>AI Dev Sandbox</h2>
+            <p>Enter the password to continue</p>
+            <form id="pw-form">
+                <input type="password" id="pw-input" placeholder="Password" autocomplete="off" autofocus />
+                <button type="submit">Unlock</button>
+                <div class="pw-error" id="pw-error"></div>
+            </form>
+        </div>
+    </div>
 
     <nav class="bg-gray-900/80 backdrop-blur-md shadow-lg fixed w-full z-10 top-0">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -318,28 +415,6 @@
 
                 <div class="link-card bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700">
                     <div class="flex items-center mb-4">
-                        <div class="p-2 bg-teal-500/20 rounded-md mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-400" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-100">Digital Points (Cloud)</h3>
-                    </div>
-                    <p class="text-gray-400 mb-5">
-                        Updated calculator with Team Sharing via Google Sheets
-                    </p>
-                    <a href="streamingrpsupdate.html" target="_blank" rel="noopener noreferrer"
-                        class="inline-block text-teal-400 hover:text-teal-300 font-medium transition-colors duration-300 group">
-                        Try Cloud Version
-                        <span
-                            class="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">&rarr;</span>
-                    </a>
-                </div>
-
-                <div class="link-card bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700">
-                    <div class="flex items-center mb-4">
                         <div class="p-2 bg-indigo-500/20 rounded-md mr-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -362,27 +437,6 @@
                     </a>
                 </div>
 
-                <div class="link-card bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700">
-                    <div class="flex items-center mb-4">
-                        <div class="p-2 bg-cyan-500/20 rounded-md mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-400" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-gray-100">Inbox Velocity</h3>
-                    </div>
-                    <p class="text-gray-400 mb-5">
-                        Live dashboard for tracking email inflow/outflow
-                    </p>
-                    <a href="emailvelocity.html" target="_blank" rel="noopener noreferrer"
-                        class="inline-block text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300 group">
-                        Launch Dashboard
-                        <span
-                            class="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">&rarr;</span>
-                    </a>
-                </div>
 
             </div>
         </div>
@@ -406,6 +460,37 @@
     </footer>
 
     <script>
+        // --- Password Gate ---
+        // SHA-256 hash of the password. Change the password by updating this hash.
+        // Current password: "sandbox"
+        const PASSWORD_HASH = 'b7ad567477c83756aab9a542b2be04f77dbae25115d85f22070d74d8cc4779dc';
+
+        async function sha256(str) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Check if already authenticated this session
+        if (sessionStorage.getItem('authed') === '1') {
+            document.getElementById('password-overlay').remove();
+            document.body.classList.remove('locked');
+        }
+
+        document.getElementById('pw-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const input = document.getElementById('pw-input').value;
+            const hash = await sha256(input);
+            if (hash === PASSWORD_HASH) {
+                sessionStorage.setItem('authed', '1');
+                document.getElementById('password-overlay').remove();
+                document.body.classList.remove('locked');
+            } else {
+                document.getElementById('pw-error').textContent = 'Incorrect password. Try again.';
+                document.getElementById('pw-input').value = '';
+                document.getElementById('pw-input').focus();
+            }
+        });
+
         // Set current year in footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
@@ -416,7 +501,6 @@
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    // Calculate position considering fixed navbar height
                     const navbarHeight = document.querySelector('nav').offsetHeight;
                     const elementPosition = targetElement.getBoundingClientRect().top;
                     const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
